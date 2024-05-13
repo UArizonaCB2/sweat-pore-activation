@@ -50,14 +50,18 @@ class Preprocessing:
         upper_green = np.array([90, 245, 245]) 
         # Red circles
         lower_red = np.array([0, 100, 100])  
-        upper_red = np.array([20, 255, 255])  
+        upper_red = np.array([20, 255, 255]) 
+        # Yellow circles
+        lower_yellow = np.array([20, 100, 100])
+        upper_yellow = np.array([30, 255, 255]) 
 
         # Threshold the HSV image to isolate green and red regions
         green_mask = cv2.inRange(hsv, lower_green, upper_green)
         red_mask = cv2.inRange(hsv, lower_red, upper_red)
+        yellow_mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
         
-        # Combine the red and green mask into just one mask
-        combined_mask = cv2.bitwise_or(green_mask, red_mask)
+        # Combine the red green, and yellow mask into just one mask
+        combined_mask = cv2.bitwise_or(green_mask, red_mask, yellow_mask)
 
         # Find contours of the green and red regions
         contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
