@@ -1,4 +1,4 @@
 .ipynb_checkpoints/
 env/
-
-
+local_images
+.DS_STORE
