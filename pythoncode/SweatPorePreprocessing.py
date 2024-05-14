@@ -55,7 +55,7 @@ class Preprocessing:
         lower_yellow = np.array([20, 100, 100])
         upper_yellow = np.array([30, 255, 255]) 
 
-        # Threshold the HSV image to isolate green and red regions
+        # Threshold the HSV image to isolate green, red, and yellow regions
         green_mask = cv2.inRange(hsv, lower_green, upper_green)
         red_mask = cv2.inRange(hsv, lower_red, upper_red)
         yellow_mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
@@ -63,7 +63,7 @@ class Preprocessing:
         # Combine the red green, and yellow mask into just one mask
         combined_mask = cv2.bitwise_or(green_mask, red_mask, yellow_mask)
 
-        # Find contours of the green and red regions
+        # Find contours of the green, red, and yellow regions
         contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # Create a blank mask for background
@@ -77,13 +77,13 @@ class Preprocessing:
         contour_image = cv2.bitwise_and(circled_image, circled_image, mask=blank_mask)
 
         # Save or display the result
-        #cv2.imwrite("isolated_RGcircles.png", result)
+        #cv2.imwrite("isolated_RGYcircles.png", result)
         
         return contour_image
 
     def centroid(self, contour_image, 
                  coordinate_filename='centroid_coordinates.txt',
-                 centroid_filename='centroids_RGcircles.png'):
+                 centroid_filename='centroids_RGYcircles.png'):
         """
         Function to compute the centroid of the isolated sweat pore images
         Input:
