@@ -44,7 +44,7 @@ class Preprocessing:
         # Convert the image to HSV color space
         hsv = cv2.cvtColor(circled_image, cv2.COLOR_BGR2HSV)
 
-        # Define the lower and upper bounds for green and red color in HSV (Adjust these values as needed)
+        # Define the lower and upper bounds for green, yellow, and red color in HSV (Adjust these values as needed)
         # Green circles
         lower_green = np.array([30, 30, 30])
         upper_green = np.array([90, 245, 245]) 
@@ -61,7 +61,8 @@ class Preprocessing:
         yellow_mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
         
         # Combine the red green, and yellow mask into just one mask
-        combined_mask = cv2.bitwise_or(green_mask, red_mask, yellow_mask)
+        combined_mask = cv2.bitwise_or(cv2.bitwise_or(green_mask, red_mask), yellow_mask)
+        #combined_mask = cv2.bitwise_or(green_mask, red_mask)
 
         # Find contours of the green, red, and yellow regions
         contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
