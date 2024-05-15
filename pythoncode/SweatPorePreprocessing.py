@@ -30,7 +30,7 @@ class Preprocessing:
         centroid_coordinates = self.centroid(contour_image)
 
         # Perform Data Augmentation (Add Noise)
-        #self.data_augmentation(raw_image_path, centroid_coordinates)
+        self.data_augmentation(raw_image_path, centroid_coordinates)
 
     def isolate_sweat_pores(self, circled_image):
         """
@@ -143,18 +143,21 @@ class Preprocessing:
 
         return coordinate_filename
 
-    def data_augmentation(self, raw_image_path, centroid_coordinates):
+    def data_augmentation(self, raw_image_path, centroid_coordinates, output_folder='../dataset/'):
         """
         Function to perform data augmentation (Add noise) on raw/original image and pair it with the centroid coordinates calculated.
         Inputs:
             raw_image_path - Raw/original sweat pore image without any annotations
             centroid_coordinates - Centroid coordinate filename
+            output_folder - Path to where the augmentation images and co-ordinates will be stored.
         Output:
             Function populates augmented images and corresponding centroid coordinate files in their directories
         """
         # Directory where the images will be saved
-        output_image_directory = "dataset/PoreGroundTruthSampleimage/"
-        output_txt_directory = "dataset/PoreGroundTruthMarked/"
+        output_image_directory = os.path.join(output_folder, 'PoreGroundTruthSampleimage')
+        #output_image_directory = f"{output_folder}/PoreGroundTruthSampleimage/"
+        output_txt_directory = os.path.join(output_folder, 'PoreGroundTruthMarked')
+        #output_txt_directory = "dataset/PoreGroundTruthMarked/"
 
         # Get the list of files in the output directory
         existing_files = os.listdir(output_image_directory)
