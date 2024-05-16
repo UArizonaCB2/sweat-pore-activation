@@ -11,7 +11,7 @@ class Preprocessing:
     def __init__(self):
         pass
 
-    def process_image(self, raw_image_path, circled_image_path):
+    def process_image(self, raw_image_path, circled_image_path, image_name):
         """
         Function to load Dr. Runyon's annotated image with circled sweat pores, isolates the sweat pores based on the 
         circled regions, computes the centroid of the sweat pores, and performs data augmentation by adding noise to 
@@ -19,6 +19,7 @@ class Preprocessing:
         Inputs: 
             raw_image_path - Path of raw/original sweat pore image without any annotations
             circled_image_path - Path of Dr Runyon's annotated image
+            image_name - The name of the current processing image
         """
         # Load Dr Runyon's image with circled sweat pores
         circled_image = cv2.imread(circled_image_path)
@@ -27,10 +28,10 @@ class Preprocessing:
         contour_image = self.isolate_sweat_pores(circled_image)
 
         # Compute centroid of sweat pores
-        centroid_coordinates = self.centroid(contour_image)
+        centroid_coordinates = self.centroid(contour_image, image_name)
 
         # Perform Data Augmentation (Add Noise)
-        self.data_augmentation(raw_image_path, centroid_coordinates)
+        # self.data_augmentation(raw_image_path, centroid_coordinates)
 
     def isolate_sweat_pores(self, circled_image):
         """
@@ -82,18 +83,21 @@ class Preprocessing:
         
         return contour_image
 
-    def centroid(self, contour_image, 
-                 coordinate_filename='centroid_coordinates.txt',
-                 centroid_filename='centroids_RGYcircles.png'):
+    def centroid(self, contour_image, image_name):
         """
         Function to compute the centroid of the isolated sweat pore images
         Input:
             contour_image - Isolated regions of sweat pores with black mask as background
+            image_name - The name of the current processing image name
             coordinate_filename - Path of the file where centroids coordinates are stored.
             centroid_filename - Path of the file which has the image with circled centroids.
         Output:
             coordinate_filename - Centroid coordinate filename
         """
+         # Generate unique filenames based on the input image filename
+        coordinate_filename = f"{image_name}.txt"
+        centroid_filename = f"{image_name}.png"
+        
         # https://pyimagesearch.com/2016/02/01/opencv-center-of-contour/
         # For non greyscaled images (circled images)
         # Load the image, convert it to grayscale, blur it slightly, and threshold it
@@ -111,9 +115,17 @@ class Preprocessing:
 
         # Create a copy of the contour image to draw centroids on
         contour_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-
+        
+        # -- Ricky Modified -- #
+        # Specify the directory where you want to save the image
+        coordinate_output_directory = "../results/centroid_coordinates/"
+        
+        # Create the full path for the centroid image file
+        coordinate_filepath = os.path.join(coordinate_output_directory, coordinate_filename)
+        # -------------------- #
+        
         # For creating GroundTruth files
-        with open(coordinate_filename, "w") as file:
+        with open(coordinate_filepath, "w") as file:
             # Write the header
             file.write("y\tx\n")  
 
@@ -137,9 +149,16 @@ class Preprocessing:
                 # Draw the contour and centroid on the image for visualization
                 cv2.drawContours(contour_image, [c], -1, (255, 0, 0), 1) # Blue Contour
                 cv2.circle(contour_image, (cX, cY), 0, (0, 0, 255), -1) # Red Centroid
+        
+        # -- Ricky Modified -- #
+        # Specify the directory where you want to save the image
+        centroid_output_directory = "../results/contour_images/"
 
-        # Save contour and centroid image 
-        cv2.imwrite(centroid_filename, contour_image)
+        # Create the full path for the centroid image file
+        centroid_filepath = os.path.join(centroid_output_directory, centroid_filename)
+        # Save contour and centroid image in the specified directory
+        cv2.imwrite(centroid_filepath, contour_image)
+        # -------------------- #
 
         return coordinate_filename
 
@@ -197,17 +216,41 @@ class Preprocessing:
             
             # Increment the count of existing files
             num_existing_files += 1  
+            
 
 if __name__ == "__main__":
-    # Create an instance of the Preprocessing class
+    # create an instance of the Procesing class
     processor = Preprocessing()
-
-    if len(sys.argv) < 2:
-        print('Pass the raw and cirled image paths as arguments.')
+    
+    # check the user's inputs
+    if len(sys.argv) != 3:
+        print("Pass the raw and circled image folder paths as arguments.")
         exit()
-    # Define paths for the inputs
-    raw_image_path = sys.argv[1] 
-    circled_image_path = sys.argv[2]
+        
+    # Define paths for the folders
+    raw_image_folder = sys.argv[1]
+    circled_image_folder = sys.argv[2]
+    
+    # Get a list of image files in the raw image folder
+    raw_image_files = os.listdir(raw_image_folder)
 
-    # Run Preprocessing pipeline
-    processor.process_image(raw_image_path, circled_image_path)
+    for image_name in raw_image_files:
+        """
+        We assume that the circled_image_files have the same name as
+        their correspoding raw_image_files
+        """
+        # construct the full path of the raw image and circled image paths
+        raw_image_path = os.path.join(raw_image_folder, image_name)
+        circled_image_path = os.path.join(circled_image_folder, image_name)
+        
+        # Run the Preprocessing pipeline
+        processor.process_image(raw_image_path, circled_image_path, image_name)
+        
+    # Print the number of processed image pairs
+    print(f"Processed {len(raw_image_files)} image pairs.")
+        
+    
+    
+    
+    
+    
