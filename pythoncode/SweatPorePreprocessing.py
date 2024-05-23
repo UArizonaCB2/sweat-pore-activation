@@ -41,6 +41,9 @@ class Preprocessing:
         Output:
             contour_image - Isolated regions of sweat pores with black mask as background
         """
+        # Make sure the image is loaded
+        if circled_image is None:
+            print("Failed to load the image.")
 
         # Convert the image to HSV color space
         hsv = cv2.cvtColor(circled_image, cv2.COLOR_BGR2HSV)
@@ -242,6 +245,9 @@ if __name__ == "__main__":
         # construct the full path of the raw image and circled image paths
         raw_image_path = os.path.join(raw_image_folder, image_name)
         circled_image_path = os.path.join(circled_image_folder, image_name)
+        
+        print(raw_image_path)
+        print(circled_image_path)
         
         # Run the Preprocessing pipeline
         processor.process_image(raw_image_path, circled_image_path, image_name)
