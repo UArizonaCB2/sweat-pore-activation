@@ -148,7 +148,7 @@ class Preprocessing:
 
                 # Write the coordinates to the file
                 file.write(f"{cY}\t{cX}\n")  # For some reason, the PoreGroundTruthMarked images must be in (Y X) format instead of (X Y)  
-
+                
                 # Draw the contour and centroid on the image for visualization
                 cv2.drawContours(contour_image, [c], -1, (255, 0, 0), 1) # Blue Contour
                 cv2.circle(contour_image, (cX, cY), 0, (0, 0, 255), -1) # Red Centroid
