@@ -98,6 +98,7 @@ class Preprocessing:
             coordinate_filename - Centroid coordinate filename
         """
          # Generate unique filenames based on the input image filename
+        image_name = image_name[:-4] # crop the ".bmp" extenstion
         coordinate_filename = f"{image_name}.txt"
         centroid_filename = f"{image_name}.png"
         
@@ -146,7 +147,7 @@ class Preprocessing:
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
 
-                # Write the coordinates to the file
+                # Write the coordinates to the file 
                 file.write(f"{cY}\t{cX}\n")  # For some reason, the PoreGroundTruthMarked images must be in (Y X) format instead of (X Y)  
                 
                 # Draw the contour and centroid on the image for visualization
@@ -236,7 +237,7 @@ if __name__ == "__main__":
     
     # Get a list of image files in the raw image folder
     raw_image_files = os.listdir(raw_image_folder)
-
+    
     for image_name in raw_image_files:
         """
         We assume that the circled_image_files have the same name as
