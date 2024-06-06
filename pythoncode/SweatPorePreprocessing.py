@@ -66,7 +66,6 @@ class Preprocessing:
         
         # Combine the red green, and yellow mask into just one mask
         combined_mask = cv2.bitwise_or(cv2.bitwise_or(green_mask, red_mask), yellow_mask)
-        #combined_mask = cv2.bitwise_or(green_mask, red_mask)
 
         # Find contours of the green, red, and yellow regions
         contours, _ = cv2.findContours(combined_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -89,6 +88,7 @@ class Preprocessing:
     def centroid(self, contour_image, image_name):
         """
         Function to compute the centroid of the isolated sweat pore images
+        Function stores both centroid files and coordinate files
         Input:
             contour_image - Isolated regions of sweat pores with black mask as background
             image_name - The name of the current processing image name
@@ -252,9 +252,5 @@ if __name__ == "__main__":
         
     # Print the number of processed image pairs
     print(f"Processed {len(raw_image_files)} image pairs.")
-        
-    
-    
-    
     
     
