@@ -115,7 +115,11 @@ class Preprocessing:
         # thresh = cv2.threshold(grey, 60, 255, cv2.THRESH_BINARY)[1] 
 
         # find contours in the thresholded image
-        cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)
+        # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
+        
 
         # Create a copy of the contour image to draw centroids on
         contour_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
