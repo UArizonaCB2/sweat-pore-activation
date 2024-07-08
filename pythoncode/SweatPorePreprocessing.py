@@ -21,6 +21,9 @@ class Preprocessing:
             circled_image_path - Path of Dr Runyon's annotated image
             image_name - The name of the current processing image
         """
+        global Coordinates_lst # Use this list to store the coordinates 
+        Coordinates_lst = []   # it will be reseted when this function get called
+        
         # Load Dr Runyon's image with circled sweat pores
         circled_image = cv2.imread(circled_image_path)
 
@@ -29,6 +32,9 @@ class Preprocessing:
 
         # Compute centroid of sweat pores
         centroid_coordinates = self.centroid(contour_image, image_name)
+        
+        # Check if there has sweat pores in the batch
+        self.has_sweatPores(raw_image_path, Coordinates_lst)
 
         # Perform Data Augmentation (Add Noise)
         # self.data_augmentation(raw_image_path, centroid_coordinates)
@@ -147,6 +153,9 @@ class Preprocessing:
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
+                
+                # Store the coordinates into a list
+                Coordinates_lst.append((cX, cY))
 
                 # Write the coordinates to the file 
                 file.write(f"{cY}\t{cX}\n")  # For some reason, the PoreGroundTruthMarked images must be in (Y X) format instead of (X Y)  
@@ -166,6 +175,9 @@ class Preprocessing:
         # -------------------- #
 
         return coordinate_filename
+    
+    def has_sweatPores(self, raw_image_path, Coordinates_lst):
+        print(len(Coordinates_lst))
 
     def data_augmentation(self, raw_image_path, centroid_coordinates, output_folder='../dataset/'):
         """
