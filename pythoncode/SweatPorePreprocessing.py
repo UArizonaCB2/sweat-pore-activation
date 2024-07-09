@@ -37,7 +37,7 @@ class Preprocessing:
         centroid_coordinates = self.centroid(contour_image, image_name)
         
         # Check if there has sweat pores in the batch
-        sweatpore_batches = self.has_sweatPores(raw_image, Coordinates_lst)
+        sweatpore_batches = self.has_sweatPores(raw_image, Coordinates_lst, image_name)
 
         # Perform Data Augmentation (Add Noise)
         # self.data_augmentation(raw_image_path, centroid_coordinates)
@@ -179,7 +179,7 @@ class Preprocessing:
 
         return coordinate_filename
     
-    def has_sweatPores(self, raw_image, Coordinates_lst):
+    def has_sweatPores(self, raw_image, Coordinates_lst, image_name):
         """
         This function will store the batches if there are detected sweat pores.
         We created a kernel (17 X 17) to slide through the raw_image. If the coordinates 
@@ -201,12 +201,14 @@ class Preprocessing:
         stride = 17
         
         # Save the valid batches in this directory
-        valid_batches_directory = "../results/valid_batches/"
+        valid_batches_directory = "../results/valid_batches/17X17/"
         
         # Number of batches for the current processing image
         num_batch_count = 0
         for i in range(0, img_height - batch_height + 1, stride):
             for j in range(0, img_width - batch_width + 1, stride):
+                # increament num_batch_count
+                num_batch_count += 1
                 # Extract the current batch
                 batch = raw_image[i:i+batch_height, j:j+batch_width, :]
                 
@@ -218,12 +220,22 @@ class Preprocessing:
                         num_batch_count += 1 # this number will be used in naming the batch
                         # append a batch to a list 
                         sweatpore_batches.append(batch)
+                        
+                        # Has Swaet Pores included 
                         # Save the batches in the directory ---> initImg_#_label
+                        batch_filename = f"{image_name}_{num_batch_count}_1.png"
+                        batch_path = os.path.join(valid_batches_directory, batch_filename)
+                        cv2.imwrite(batch_path, batch)
                         
                         # There's no need to check further sweat pores
                         break
-        print(num_batch_count)
                     
+                    # Not Swaet Pores included 
+                    # Save the batches in the directory ---> initImg_#_label
+                    batch_filename = f"{image_name}_{num_batch_count}_0.png"
+                    batch_path = os.path.join(valid_batches_directory, batch_filename)
+                    cv2.imwrite(batch_path, batch)
+                 
         print("-- Summary --")
         print("Total Coordinates: ", len(Coordinates_lst))
         print("Initial Image Shape: ", "(", img_height, img_width, ")")
