@@ -196,15 +196,16 @@ class Preprocessing:
         img_height, img_width, _ = raw_image.shape
         
         # Define the size of each batch
-        batch_height = 17
-        batch_width = 17
-        stride = 17
+        batch_height = 52
+        batch_width = 52
+        stride = 52
         
         # Save the valid batches in this directory
         valid_batches_directory = "../results/valid_batches/17X17/"
         
         # Number of batches for the current processing image
         num_batch_count = 0
+        valid_batches = 0
         for i in range(0, img_height - batch_height + 1, stride):
             for j in range(0, img_width - batch_width + 1, stride):
                 # increament num_batch_count
@@ -212,35 +213,37 @@ class Preprocessing:
                 # Extract the current batch
                 batch = raw_image[i:i+batch_height, j:j+batch_width, :]
                 
-                # Check if there's any sweat pore coordinates are within this batch 
+                # Check if there's any sweat pore coordinates within this batch
+                has_sweat_pore = False
                 for coord in Coordinates_lst:
                     x, y = coord  # Unpack the tuple into x and y coordinates
-                    if (i <= x < i+batch_height and
-                        j <= y < j+batch_width):
-                        num_batch_count += 1 # this number will be used in naming the batch
-                        # append a batch to a list 
-                        sweatpore_batches.append(batch)
-                        
-                        # Has Swaet Pores included 
-                        # Save the batches in the directory ---> initImg_#_label
-                        batch_filename = f"{image_name}_{num_batch_count}_1.png"
-                        batch_path = os.path.join(valid_batches_directory, batch_filename)
-                        cv2.imwrite(batch_path, batch)
-                        
+                    if (i <= x < i+batch_height and j <= y < j+batch_width):
+                        # Detect Sweat Pores
+                        has_sweat_pore = True
                         # There's no need to check further sweat pores
                         break
                     
-                    # Not Swaet Pores included 
-                    # Save the batches in the directory ---> initImg_#_label
-                    batch_filename = f"{image_name}_{num_batch_count}_0.png"
-                    batch_path = os.path.join(valid_batches_directory, batch_filename)
-                    cv2.imwrite(batch_path, batch)
+                # Append all batches
+                sweatpore_batches.append(batch)
+                
+                # Use the appropriate label based on whether a sweat pore was found
+                # label = 1 if has_sweat_pore else 0
+                if has_sweat_pore:
+                    label = 1
+                    valid_batches += 1
+                else:
+                    label = 0
+                    
+                batch_filename = f"{image_name}_{num_batch_count}_{label}.png"
+                batch_path = os.path.join(valid_batches_directory, batch_filename)
+                cv2.imwrite(batch_path, batch)
                  
         print("-- Summary --")
         print("Total Coordinates: ", len(Coordinates_lst))
         print("Initial Image Shape: ", "(", img_height, img_width, ")")
-        print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width))
-        print("Saved Valid Batches Amount: ",len(sweatpore_batches))
+        print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
+              "= Saved Valid Batches Amount: ",len(sweatpore_batches))
+        print("Batches have sweat pores: ", valid_batches)
         print()
         
         return sweatpore_batches
