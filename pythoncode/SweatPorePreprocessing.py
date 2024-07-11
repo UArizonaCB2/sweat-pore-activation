@@ -196,12 +196,12 @@ class Preprocessing:
         img_height, img_width, _ = raw_image.shape
         
         # Define the size of each batch
-        batch_height = 52
-        batch_width = 52
-        stride = 52
+        batch_height = 17
+        batch_width = 17
+        stride = 17
         
         # Save the valid batches in this directory
-        valid_batches_directory = "../results/valid_batches/17X17/"
+        valid_batches_directory = "../results/batchesSize/17X17/"
         
         # Number of batches for the current processing image
         num_batch_count = 0
