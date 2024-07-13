@@ -196,16 +196,17 @@ class Preprocessing:
         img_height, img_width, _ = raw_image.shape
         
         # Define the size of each batch
-        batch_height = 17
-        batch_width = 17
-        stride = 17
+        batch_height = 32
+        batch_width = 32
+        stride = 32
         
         # Save the valid batches in this directory
-        valid_batches_directory = "../results/batchesSize/17X17/"
+        valid_batches_directory = "../results/batchesSize/32X32/"
         
         # Number of batches for the current processing image
         num_batch_count = 0
         valid_batches = 0
+        pores_count = 0
         for i in range(0, img_height - batch_height + 1, stride):
             for j in range(0, img_width - batch_width + 1, stride):
                 # increament num_batch_count
@@ -220,8 +221,10 @@ class Preprocessing:
                     if (i <= x < i+batch_height and j <= y < j+batch_width):
                         # Detect Sweat Pores
                         has_sweat_pore = True
-                        # There's no need to check further sweat pores
-                        break
+                        # # There's no need to check further sweat pores
+                        # break
+                        pores_count += 1
+                        
                     
                 # Append all batches
                 sweatpore_batches.append(batch)
@@ -239,7 +242,7 @@ class Preprocessing:
                 cv2.imwrite(batch_path, batch)
                  
         print("-- Summary --")
-        print("Total Coordinates: ", len(Coordinates_lst))
+        print("Total Sweat Pore Coordinates: ",len(Coordinates_lst), "| Sweat Pores Count: ",pores_count)
         print("Initial Image Shape: ", "(", img_height, img_width, ")")
         print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
               "= Saved Valid Batches Amount: ",len(sweatpore_batches))
