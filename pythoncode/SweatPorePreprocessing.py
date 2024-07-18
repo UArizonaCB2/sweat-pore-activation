@@ -182,7 +182,7 @@ class Preprocessing:
     def has_sweatPores(self, raw_image, Coordinates_lst, image_name):
         """
         This function will store the batches if there are detected sweat pores.
-        We created a kernel (17 X 17) to slide through the raw_image. If the coordinates 
+        We created a kernel (32 X 32) to slide through the raw_image. If the coordinates 
         from Coordinates_lst are in the range of the current kernel area than we store and 
         mark the batch. 
         Args:
@@ -198,14 +198,14 @@ class Preprocessing:
         # Define the size of each batch
         batch_height = 32
         batch_width = 32
-        stride = 32
+        stride = batch_width  # move to the next stride to avoid overlap 
         
         # Save the valid batches in this directory
         valid_batches_directory = "../results/batchesSize/32X32/"
         
         # Number of batches for the current processing image
         num_batch_count = 0
-        valid_batches = 0
+        hasPores_batches = 0
         pores_count = 0
         for i in range(0, img_height - batch_height + 1, stride):
             for j in range(0, img_width - batch_width + 1, stride):
@@ -218,7 +218,7 @@ class Preprocessing:
                 has_sweat_pore = False
                 for coord in Coordinates_lst:
                     x, y = coord  # Unpack the tuple into x and y coordinates
-                    if (i <= x < i+batch_height and j <= y < j+batch_width):
+                    if (j <= x < j+batch_width and i <= y < i+batch_height):
                         # Detect Sweat Pores
                         has_sweat_pore = True
                         # # There's no need to check further sweat pores
@@ -233,7 +233,7 @@ class Preprocessing:
                 # label = 1 if has_sweat_pore else 0
                 if has_sweat_pore:
                     label = 1
-                    valid_batches += 1
+                    hasPores_batches += 1
                 else:
                     label = 0
                     
@@ -246,7 +246,7 @@ class Preprocessing:
         print("Initial Image Shape: ", "(", img_height, img_width, ")")
         print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
               "= Saved Valid Batches Amount: ",len(sweatpore_batches))
-        print("Batches have sweat pores: ", valid_batches)
+        print("Batches have sweat pores: ", hasPores_batches)
         print()
         
         return sweatpore_batches
