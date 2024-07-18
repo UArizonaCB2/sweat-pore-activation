@@ -189,9 +189,6 @@ class Preprocessing:
             raw_image: raw image read by cv.imshow()
             Coordinates_lst: a list of tuples which consist of sweat pores coordinates
         """
-        # List of np arrays to store batches with sweat pores
-        sweatpore_batches = []
-        
         # Get the shape of the inital img
         img_height, img_width, _ = raw_image.shape
         
@@ -201,12 +198,13 @@ class Preprocessing:
         stride = batch_width  # move to the next stride to avoid overlap 
         
         # Save the valid batches in this directory
-        valid_batches_directory = "../results/batchesSize/32X32/"
+        batches_directory = "../results/batchesSize/32X32/"
         
         # Number of batches for the current processing image
         num_batch_count = 0
         hasPores_batches = 0
         pores_count = 0
+        label = 0
         for i in range(0, img_height - batch_height + 1, stride):
             for j in range(0, img_width - batch_width + 1, stride):
                 # increament num_batch_count
@@ -225,9 +223,6 @@ class Preprocessing:
                         # break
                         pores_count += 1
                         
-                    
-                # Append all batches
-                sweatpore_batches.append(batch)
                 
                 # Use the appropriate label based on whether a sweat pore was found
                 # label = 1 if has_sweat_pore else 0
@@ -238,18 +233,18 @@ class Preprocessing:
                     label = 0
                     
                 batch_filename = f"{image_name}_{num_batch_count}_{label}.png"
-                batch_path = os.path.join(valid_batches_directory, batch_filename)
+                batch_path = os.path.join(batches_directory, batch_filename)
                 cv2.imwrite(batch_path, batch)
                  
         print("-- Summary --")
-        print("Total Sweat Pore Coordinates: ",len(Coordinates_lst), "| Sweat Pores Count: ",pores_count)
         print("Initial Image Shape: ", "(", img_height, img_width, ")")
+        print("Total Sweat Pore Coordinates: ",len(Coordinates_lst), "| Sweat Pores Count: ",pores_count)
         print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
-              "= Saved Valid Batches Amount: ",len(sweatpore_batches))
+              "| Batches Count: ",num_batch_count)
         print("Batches have sweat pores: ", hasPores_batches)
         print()
         
-        return sweatpore_batches
+        return
 
     def data_augmentation(self, raw_image_path, centroid_coordinates, output_folder='../dataset/'):
         """
