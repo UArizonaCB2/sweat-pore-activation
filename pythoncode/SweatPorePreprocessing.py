@@ -210,6 +210,7 @@ class Preprocessing:
                 # increament num_batch_count
                 num_batch_count += 1
                 # Extract the current batch
+                # Numpy ---> image[height, width, channels]
                 batch = raw_image[i:i+batch_height, j:j+batch_width, :]
                 
                 # Check if there's any sweat pore coordinates within this batch
@@ -219,8 +220,6 @@ class Preprocessing:
                     if (j <= x < j+batch_width and i <= y < i+batch_height):
                         # Detect Sweat Pores
                         has_sweat_pore = True
-                        # # There's no need to check further sweat pores
-                        # break
                         pores_count += 1
                         
                 
