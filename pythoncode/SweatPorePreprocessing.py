@@ -21,14 +21,31 @@ class Preprocessing:
             circled_image_path - Path of Dr Runyon's annotated image
             image_name - The name of the current processing image
         """
+<<<<<<< HEAD
         # Load Dr Runyon's image with circled sweat pores
         circled_image = cv2.imread(circled_image_path)
+=======
+        global Coordinates_lst # Use this list to store the coordinates 
+        Coordinates_lst = []   # it will be reseted when this function get called
+        
+        # Load Dr Runyon's image with circled sweat pores
+        circled_image = cv2.imread(circled_image_path)
+        
+        # Load Dr Runyon's raw image 
+        raw_image = cv2.imread(raw_image_path)
+>>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
         # Isolate the sweat pores based on the circled regions of the image
         contour_image = self.isolate_sweat_pores(circled_image)
 
         # Compute centroid of sweat pores
         centroid_coordinates = self.centroid(contour_image, image_name)
+<<<<<<< HEAD
+=======
+        
+        # Check if there has sweat pores in the batch
+        sweatpore_batches = self.has_sweatPores(raw_image, Coordinates_lst, image_name)
+>>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
         # Perform Data Augmentation (Add Noise)
         # self.data_augmentation(raw_image_path, centroid_coordinates)
@@ -115,10 +132,14 @@ class Preprocessing:
         # thresh = cv2.threshold(grey, 60, 255, cv2.THRESH_BINARY)[1] 
 
         # find contours in the thresholded image
+<<<<<<< HEAD
         # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)
         # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
+=======
+        cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+>>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
         
 
         # Create a copy of the contour image to draw centroids on
@@ -150,6 +171,12 @@ class Preprocessing:
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
+<<<<<<< HEAD
+=======
+                
+                # Store the coordinates into a list
+                Coordinates_lst.append((cX, cY))
+>>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
                 # Write the coordinates to the file 
                 file.write(f"{cY}\t{cX}\n")  # For some reason, the PoreGroundTruthMarked images must be in (Y X) format instead of (X Y)  
@@ -169,6 +196,75 @@ class Preprocessing:
         # -------------------- #
 
         return coordinate_filename
+<<<<<<< HEAD
+=======
+    
+    def has_sweatPores(self, raw_image, Coordinates_lst, image_name):
+        """
+        This function will store the batches if there are detected sweat pores.
+        We created a kernel (32 X 32) to slide through the raw_image. If the coordinates 
+        from Coordinates_lst are in the range of the current kernel area than we store and 
+        mark the batch. 
+        Args:
+            raw_image: raw image read by cv.imshow()
+            Coordinates_lst: a list of tuples which consist of sweat pores coordinates
+        """
+        # Get the shape of the inital img
+        img_height, img_width, _ = raw_image.shape
+        
+        # Define the size of each batch
+        batch_height = 32
+        batch_width = 32
+        stride = batch_width  # move to the next stride to avoid overlap 
+        
+        # Save the valid batches in this directory
+        batches_directory = "../results/batchesSize/32X32/"
+        
+        # Number of batches for the current processing image
+        num_batch_count = 0
+        hasPores_batches = 0
+        pores_count = 0
+        label = 0
+        for i in range(0, img_height - batch_height + 1, stride):
+            for j in range(0, img_width - batch_width + 1, stride):
+                # increament num_batch_count
+                num_batch_count += 1
+                # Extract the current batch
+                # Numpy ---> image[height, width, channels]
+                batch = raw_image[i:i+batch_height, j:j+batch_width, :]
+                
+                # Check if there's any sweat pore coordinates within this batch
+                has_sweat_pore = False
+                for coord in Coordinates_lst:
+                    x, y = coord  # Unpack the tuple into x and y coordinates
+                    if (j <= x < j+batch_width and i <= y < i+batch_height):
+                        # Detect Sweat Pores
+                        has_sweat_pore = True
+                        pores_count += 1
+                        
+                
+                # Use the appropriate label based on whether a sweat pore was found
+                # label = 1 if has_sweat_pore else 0
+                if has_sweat_pore:
+                    label = 1
+                    hasPores_batches += 1
+                else:
+                    label = 0
+                    
+                batch_filename = f"{image_name}_{num_batch_count}_{label}.png"
+                batch_path = os.path.join(batches_directory, batch_filename)
+                cv2.imwrite(batch_path, batch)
+                 
+        print("-- Summary --")
+        print("Initial Image Shape: ", "(", img_height, img_width, ")")
+        print("Total Sweat Pore Coordinates: ",len(Coordinates_lst), "| Sweat Pores Count: ",pores_count)
+        print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
+              "| Batches Count: ",num_batch_count)
+        print("Batches have sweat pores: ", hasPores_batches)
+        print()
+        
+        return
+>>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
     def data_augmentation(self, raw_image_path, centroid_coordinates, output_folder='../dataset/'):
         """
