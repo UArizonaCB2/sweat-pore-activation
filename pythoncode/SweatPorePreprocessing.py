@@ -21,10 +21,9 @@ class Preprocessing:
             circled_image_path - Path of Dr Runyon's annotated image
             image_name - The name of the current processing image
         """
-<<<<<<< HEAD
         # Load Dr Runyon's image with circled sweat pores
         circled_image = cv2.imread(circled_image_path)
-=======
+
         global Coordinates_lst # Use this list to store the coordinates 
         Coordinates_lst = []   # it will be reseted when this function get called
         
@@ -33,19 +32,15 @@ class Preprocessing:
         
         # Load Dr Runyon's raw image 
         raw_image = cv2.imread(raw_image_path)
->>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
         # Isolate the sweat pores based on the circled regions of the image
         contour_image = self.isolate_sweat_pores(circled_image)
 
         # Compute centroid of sweat pores
         centroid_coordinates = self.centroid(contour_image, image_name)
-<<<<<<< HEAD
-=======
         
         # Check if there has sweat pores in the batch
         sweatpore_batches = self.has_sweatPores(raw_image, Coordinates_lst, image_name)
->>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
         # Perform Data Augmentation (Add Noise)
         # self.data_augmentation(raw_image_path, centroid_coordinates)
@@ -132,14 +127,7 @@ class Preprocessing:
         # thresh = cv2.threshold(grey, 60, 255, cv2.THRESH_BINARY)[1] 
 
         # find contours in the thresholded image
-<<<<<<< HEAD
-        # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)
-        # cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-        cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_L1)
-=======
         cnts, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
->>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
         
 
         # Create a copy of the contour image to draw centroids on
@@ -171,12 +159,9 @@ class Preprocessing:
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-<<<<<<< HEAD
-=======
                 
                 # Store the coordinates into a list
                 Coordinates_lst.append((cX, cY))
->>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
                 # Write the coordinates to the file 
                 file.write(f"{cY}\t{cX}\n")  # For some reason, the PoreGroundTruthMarked images must be in (Y X) format instead of (X Y)  
@@ -196,8 +181,6 @@ class Preprocessing:
         # -------------------- #
 
         return coordinate_filename
-<<<<<<< HEAD
-=======
     
     def has_sweatPores(self, raw_image, Coordinates_lst, image_name):
         """
@@ -256,7 +239,8 @@ class Preprocessing:
                 cv2.imwrite(batch_path, batch)
                  
         print("-- Summary --")
-        print("Initial Image Shape: ", "(", img_height, img_width, ")")
+        print(f"Image name: {image_name}")
+        print("Image Shape:", "(",img_height, img_width,")")
         print("Total Sweat Pore Coordinates: ",len(Coordinates_lst), "| Sweat Pores Count: ",pores_count)
         print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
               "| Batches Count: ",num_batch_count)
@@ -264,7 +248,6 @@ class Preprocessing:
         print()
         
         return
->>>>>>> 87fd073a1a8a7213eb09f18913373a753fb5b1f3
 
     def data_augmentation(self, raw_image_path, centroid_coordinates, output_folder='../dataset/'):
         """
