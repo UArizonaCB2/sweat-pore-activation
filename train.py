@@ -12,6 +12,14 @@ parser.add_argument('--patchSize',
                     required=True,
                     type=int)
 
+parser.add_argument('--TrainingPercentage',
+                    default=0.8,
+                    type=float)
+
+parser.add_argument('--TestingPercentage',
+                    default=0.2,
+                    type=float)
+
 args = parser.parse_args()
 
 
@@ -23,6 +31,11 @@ class algorithm:
     3. Training model ---> epoch, loss fuction, and optimizer
     4. Evaluating stage ---> Confusion Matrix 
     """
+    # Hyper Parameters Definitions from script 
+    patchSize = args.patchSize
+    train_size = args.TrainingPercentage
+    test_size = args.TestingPercentage
+    
     # Custom Dataset
     class SweatPoresDataset(Dataset):
         def __init__(self, img_dir, transforms = None):
@@ -64,13 +77,11 @@ class algorithm:
     ])
 
     # Apply transformation on the dataset 
-    datadir = f'Preprocessing/output_patches/batch_sizes/{args.patchSize}X{args.patchSize}'
+    datadir = f'Preprocessing/output_patches/patch_size/{patchSize}X{patchSize}'
     dataset = SweatPoresDataset(img_dir = datadir, transforms = trans)
     
-    # Split the data
-    # Training: 80%
-    # Testing: 20%
-    train_data, test_data = train_test_split(dataset, test_size=0.2)
+    # Split the data -- Train Validate Test
+    train_data, test_data = train_test_split(dataset, test_size=test_size, train_size=train_size)
     print(f"Total data: {len(dataset)}")
     print(f"Training images dataset: {len(train_data)}")
     print(f"Testing images dataset: {len(test_data)}")
