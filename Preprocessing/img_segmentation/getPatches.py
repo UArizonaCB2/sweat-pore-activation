@@ -234,11 +234,22 @@ class GetPatches:
         print()
         
         return
-        
+
 if __name__ == "__main__":
+    # Get user input for patch size
+    while True:
+        try:
+            patchSize = int(input("Enter the patch size: "))
+            if patchSize > 0:
+                break
+            else:
+                print("Patch size must be a positive integer. Please try again.")
+        except ValueError:
+            print("Invalid input. Please enter a positive integer.")
+    
     # create an instance of the getPatches class
-    getPatches = GetPatches()
-        
+    getPatches = GetPatches(patch_size = patchSize)   
+    
     # Define paths for the folders
     raw_image_folder = "../input_images/raw/"
     annotated_image_folder = "../input_images/annotated/"
