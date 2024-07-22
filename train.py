@@ -1,9 +1,11 @@
 # Import libraries
-import os, argparse
+import os, argparse, torch, importlib
 from torch.utils.data import Dataset
 from PIL import Image
 from torchvision import transforms
 from sklearn.model_selection import train_test_split
+from CNNs.SimpleCNN import SimpleCNN # Need to be Fixed 
+
 
 
 parser = argparse.ArgumentParser()
@@ -20,8 +22,10 @@ parser.add_argument('--TestingPercentage',
                     default=0.2,
                     type=float)
 
-args = parser.parse_args()
+parser.add_argument('--CNN',
+                    required=True)
 
+args = parser.parse_args()
 
 class algorithm:
     """
@@ -35,6 +39,13 @@ class algorithm:
     patchSize = args.patchSize
     train_size = args.TrainingPercentage
     test_size = args.TestingPercentage
+    cnn_name = args.CNN
+    cnn_models = {
+        "SimpleCNN": SimpleCNN}
+    if cnn_name in cnn_models:
+        cnnModel = cnn_models[cnn_name]
+    else:
+        raise ValueError(f"Unsupported CNN Model: {cnn_name}")
     
     # Custom Dataset
     class SweatPoresDataset(Dataset):
@@ -85,6 +96,7 @@ class algorithm:
     print(f"Total data: {len(dataset)}")
     print(f"Training images dataset: {len(train_data)}")
     print(f"Testing images dataset: {len(test_data)}")
+      
 
 if __name__ == "__main__":
     algorithm()
