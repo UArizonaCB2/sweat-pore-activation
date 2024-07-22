@@ -1,5 +1,6 @@
 import os, cv2
 import numpy as np
+import argparse
 
 class GetPatches:
     def __init__(self, patch_size = 32):
@@ -175,8 +176,8 @@ class GetPatches:
         img_height, img_width, _ = raw_image.shape
         
         # Define the size of each batch
-        batch_height = 32
-        batch_width = 32
+        batch_height = self.patch_size
+        batch_width = self.patch_size
         stride = batch_width  # move to the next stride to avoid overlap 
         
         
@@ -234,7 +235,6 @@ class GetPatches:
         
         return
         
-
 if __name__ == "__main__":
     # create an instance of the getPatches class
     getPatches = GetPatches()
