@@ -27,6 +27,37 @@ parser.add_argument('--CNN',
 
 args = parser.parse_args()
 
+
+# Custom Dataset
+class SweatPoresDataset(Dataset):
+    def __init__(self, img_dir, transforms = None):
+        """
+        It is run once when instantiating the Dataset object. 
+        """
+        self.img_dir = img_dir
+        self.transform = transforms
+        self.img_files = os.listdir(img_dir) # list of image files
+
+    def __len__(self):
+        """
+        It returns the number of samples in our dataset
+        """
+        return len(self.img_files)
+
+    def __getitem__(self, idx):
+        """
+        It loads and returns a smaple from the dataset at the given index
+        """
+        img_path = os.path.join(self.img_dir, self.img_files[idx])
+        image = Image.open(img_path).convert('RGB') # Retrieve the image data 
+        label = int(self.img_files[idx].split('_')[-1].split('.')[0]) # Etrack the label from the image
+        img_name = self.img_files[idx] 
+
+        if self.transform: 
+            image = self.transform(image)
+
+        return image, label, img_name
+
 class algorithm:
     """
     The algorithm class has its own custom dataset 
@@ -46,36 +77,6 @@ class algorithm:
         cnnModel = cnn_models[cnn_name]
     else:
         raise ValueError(f"Unsupported CNN Model: {cnn_name}")
-    
-    # Custom Dataset
-    class SweatPoresDataset(Dataset):
-        def __init__(self, img_dir, transforms = None):
-            """
-            It is run once when instantiating the Dataset object. 
-            """
-            self.img_dir = img_dir
-            self.transform = transforms
-            self.img_files = os.listdir(img_dir) # list of image files
-
-        def __len__(self):
-            """
-            It returns the number of samples in our dataset
-            """
-            return len(self.img_files)
-
-        def __getitem__(self, idx):
-            """
-            It loads and returns a smaple from the dataset at the given index
-            """
-            img_path = os.path.join(self.img_dir, self.img_files[idx])
-            image = Image.open(img_path).convert('RGB') # Retrieve the image data 
-            label = int(self.img_files[idx].split('_')[-1].split('.')[0]) # Etrack the label from the image
-            img_name = self.img_files[idx] 
-
-            if self.transform: 
-                image = self.transform(image)
-
-            return image, label, img_name
 
     # Create Transformation
     """
