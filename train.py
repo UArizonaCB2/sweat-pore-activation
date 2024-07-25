@@ -134,7 +134,7 @@ class algorithm:
     print(f"Image names: {Z[0]}")
     
     # Define the loss function and optimizer 
-    loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss(weight = torch.Tensor([1.0,4.0]).to('mps'))
     optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
     
     def trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn):

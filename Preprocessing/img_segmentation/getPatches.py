@@ -182,7 +182,7 @@ class GetPatches:
         
         
         # Save the valid batches in this directory
-        batches_directory = f"../output_patches/batch_sizes/{self.patch_size}X{self.patch_size}/"
+        batches_directory = f"../output_patches/patch_size/{self.patch_size}X{self.patch_size}/"
         # Check if the directory exists
         if not os.path.exists(batches_directory):
             # If it doesn't exist, create it
@@ -251,8 +251,8 @@ if __name__ == "__main__":
     getPatches = GetPatches(patch_size = patchSize)   
     
     # Define paths for the folders
-    raw_image_folder = "../input_images/raw/"
-    annotated_image_folder = "../input_images/annotated/"
+    raw_image_folder = "../input_images/smallBrushesNoBackground/raw/"
+    annotated_image_folder = "../input_images/smallBrushesNoBackground/annotated/"
     
     # Get a list of image files in the raw image folder
     raw_image_files = os.listdir(raw_image_folder)
