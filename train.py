@@ -178,6 +178,8 @@ class algorithm:
         
         fp_names = [] # Image names for false.
         fn_names = [] # Images where we missed predicting the pore.
+        tp_names = []
+        tn_names = []
         confusionMatric = { # Dict of confusion matix
             "TP: ":0,
             "TN: ":0,
@@ -204,14 +206,16 @@ class algorithm:
 
                 for i in range(len(labels)):
                     if predicted_classes[i].item() == labels[i].item() == 1:
+                        tp_names.append(names[i])
                         TP += 1
                     elif predicted_classes[i].item() == labels[i].item() == 0:
+                        tn_names.append(names[i])
                         TN += 1
                     elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
-                        fp_names.append(names) # Keep track of the fp 
+                        fp_names.append(names[i]) # Keep track of the fp 
                         FP += 1
                     else:
-                        fn_names.append(names) # Keep track of the fn
+                        fn_names.append(names[i]) # Keep track of the fn
                         FN += 1
                         
         confusionMatric["TP: "] = TP
@@ -219,9 +223,12 @@ class algorithm:
         confusionMatric["TN: "] = TN
         confusionMatric["FN: "] = FN
                 
-        return fp_names, fn_names, [TP, TN, FP, FN]
+        return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
-    _, _, results= evaluateModel(test_loader, device, trainedModel)
+    fp, fn, _, _, results= evaluateModel(test_loader, device, trainedModel)
+    
+    print(fp)
+    print(fn)
     
     def ConfusionMatrix(results, modelName):
         TP, TN, FP, FN = results
