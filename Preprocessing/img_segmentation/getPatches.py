@@ -2,6 +2,34 @@ import os, cv2
 import numpy as np
 import argparse
 
+parser = argparse.ArgumentParser()
+
+parser.add_argument('--patchSize',
+                    required=True,
+                    type = int)
+
+parser.add_argument('--rawDir',
+                    required=True,
+                    type = str)
+
+parser.add_argument('--annotatedDir',
+                    required=True,
+                    type = str)
+
+parser.add_argument('--coordinatesDir',
+                    required=True,
+                    type = str)
+
+parser.add_argument('--centroidsDir',
+                    required=True,
+                    type = str)
+
+parser.add_argument('--patchesDir',
+                    required=True,
+                    type = str)
+
+args = parser.parse_args()
+
 class GetPatches:
     def __init__(self, patch_size = 32):
         self.patch_size = patch_size
@@ -116,7 +144,7 @@ class GetPatches:
         
         # -- Ricky Modified -- #
         # Specify the directory where you want to save the image
-        coordinate_output_directory = "../output_patches/centroid_coordinates/"
+        coordinate_output_directory = args.coordinatesDir
         
         # Create the full path for the centroid image file
         coordinate_filepath = os.path.join(coordinate_output_directory, coordinate_filename)
@@ -153,12 +181,12 @@ class GetPatches:
         
         # -- Ricky Modified -- #
         # Specify the directory where you want to save the image
-        centroid_output_directory = "../output_patches/contour_images/"
+        centroid_output_directory = args.centroidsDir
 
         # Create the full path for the centroid image file
-        centroid_filepath = os.path.join(centroid_output_directory, centroid_filename)
+        contour_filepath = os.path.join(centroid_output_directory, centroid_filename)
         # Save contour and centroid image in the specified directory
-        cv2.imwrite(centroid_filepath, contour_image)
+        cv2.imwrite(contour_filepath, contour_image)
         # -------------------- #
         return
     
@@ -182,7 +210,8 @@ class GetPatches:
         
         
         # Save the valid batches in this directory
-        batches_directory = f"../output_patches/patch_size/{self.patch_size}X{self.patch_size}/"
+        batches_directory = f"{args.patchesDir}/{self.patch_size}x{self.patch_size}/"
+        
         # Check if the directory exists
         if not os.path.exists(batches_directory):
             # If it doesn't exist, create it
@@ -236,23 +265,13 @@ class GetPatches:
         return
 
 if __name__ == "__main__":
-    # Get user input for patch size
-    while True:
-        try:
-            patchSize = int(input("Enter the patch size: "))
-            if patchSize > 0:
-                break
-            else:
-                print("Patch size must be a positive integer. Please try again.")
-        except ValueError:
-            print("Invalid input. Please enter a positive integer.")
+    # Get the hyper parameters from runPreprocessing.sh
+    patchSize = args.patchSize
+    raw_image_folder = args.rawDir
+    annotated_image_folder = args.annotatedDir
     
     # create an instance of the getPatches class
     getPatches = GetPatches(patch_size = patchSize)   
-    
-    # Define paths for the folders
-    raw_image_folder = "../input_images/smallBrushesNoBackground/raw/"
-    annotated_image_folder = "../input_images/smallBrushesNoBackground/annotated/"
     
     # Get a list of image files in the raw image folder
     raw_image_files = os.listdir(raw_image_folder)
