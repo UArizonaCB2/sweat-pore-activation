@@ -67,7 +67,7 @@ class algorithm:
     # get the value from hyper parameter
     cnn_name = args.CNNmodel
     device = args.device
-    patchSize = args.patchSize
+    patchSize = int(cnn_name.split("_p")[1].split("_")[0])
     batchSize = args.batchSize
     
     def recreate_model_architecture(cnn_name):

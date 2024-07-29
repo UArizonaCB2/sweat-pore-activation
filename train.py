@@ -14,10 +14,6 @@ from CNNs import SimpleCNN_p32, SimpleCNN_p17 # Need to be Fixed
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--patchSize',
-                    required=True,
-                    type=int)
-
 parser.add_argument('--batchSize',
                     required=True,
                     type=int)
@@ -97,11 +93,11 @@ class algorithm:
         return cnnModel
     
     # Hyper Parameters Definitions from script 
-    patchSize = args.patchSize
     batchSize = args.batchSize
     train_size = args.TrainingPercentage
     test_size = args.TestingPercentage
     cnn_name = args.CNN
+    patchSize = int(cnn_name.split("_p")[1])
     cnnModel = getModel(cnn_name)
     num_epochs = args.epochs
     device = args.device
