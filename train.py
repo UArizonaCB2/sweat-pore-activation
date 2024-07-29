@@ -8,13 +8,17 @@ from torchvision import transforms
 import torch.optim as optim
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-from CNNs import SimpleCNN_p32 # Need to be Fixed 
+from CNNs import SimpleCNN_p32, SimpleCNN_p17 # Need to be Fixed 
 
 
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--patchSize',
+                    required=True,
+                    type=int)
+
+parser.add_argument('--batchSize',
                     required=True,
                     type=int)
 
@@ -83,7 +87,8 @@ class algorithm:
         all the potential models in dictionary and return it
         """
         cnn_models = {
-        "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32()}
+        "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32(),
+        "SimpleCNN_p17": SimpleCNN_p17.SimpleCNN_p17()}
         
         if cnn_name in cnn_models:
             cnnModel = cnn_models[cnn_name]
@@ -93,6 +98,7 @@ class algorithm:
     
     # Hyper Parameters Definitions from script 
     patchSize = args.patchSize
+    batchSize = args.batchSize
     train_size = args.TrainingPercentage
     test_size = args.TestingPercentage
     cnn_name = args.CNN
@@ -124,8 +130,8 @@ class algorithm:
     
      
     # Pass data into dataloader 
-    train_loader = DataLoader(train_data, batch_size=8, shuffle=True, num_workers = 0)
-    test_loader = DataLoader(test_data, batch_size = 8, shuffle = True, num_workers = 0)
+    train_loader = DataLoader(train_data, batch_size=batchSize, shuffle=True, num_workers = 0)
+    test_loader = DataLoader(test_data, batch_size = batchSize, shuffle = True, num_workers = 0)
     
     # Testing out the dataloader
     X, Y, Z = next(iter(train_loader))

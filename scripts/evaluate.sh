@@ -1,3 +1,3 @@
 chmod +x ./scripts/evaluate.sh # Excute permission
 
-python evaluate.py --CNNmodel 'SimpleCNN_p32_e200.model' --device 'mps' --patchSize 32
+python evaluate.py --patchSize 17 --CNNmodel 'SimpleCNN_p17_e40.model' --device 'mps' --batchSize 8

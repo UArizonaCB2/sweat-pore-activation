@@ -1,6 +1,6 @@
 import os, argparse, torch
 from torch.utils.data import Dataset, DataLoader
-from CNNs import SimpleCNN_p32
+from CNNs import SimpleCNN_p32, SimpleCNN_p17
 from PIL import Image
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
@@ -19,6 +19,10 @@ parser.add_argument('--device',
 
 parser.add_argument('--patchSize',
                     default=32,
+                    type=int)
+
+parser.add_argument('--batchSize',
+                    default=8,
                     type=int)
 
 args = parser.parse_args()
@@ -64,13 +68,15 @@ class algorithm:
     cnn_name = args.CNNmodel
     device = args.device
     patchSize = args.patchSize
+    batchSize = args.batchSize
     
     def recreate_model_architecture(cnn_name):
         # Recreate the model architecture for loading cnn models
         architecture = cnn_name.split("_e")[0]
         
         cnn_models = {
-        "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32()}
+        "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32(),
+        "SimpleCNN_p17": SimpleCNN_p17.SimpleCNN_p17()}
         
         if architecture in cnn_models:
             cnnModel = cnn_models[architecture]
@@ -109,7 +115,7 @@ class algorithm:
     # Split the data -- Train Validate Test
     # train_data, test_data = train_test_split(dataset, test_size=0.2, train_size=0.8)
     
-    test_loader = DataLoader(dataset, batch_size = 8, shuffle = True, num_workers = 0)
+    test_loader = DataLoader(dataset, batch_size = batchSize, shuffle = True, num_workers = 0)
     
     def evaluateModel(test_loader, device, model):
         model = model.to(device)
