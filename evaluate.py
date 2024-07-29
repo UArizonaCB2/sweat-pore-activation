@@ -5,6 +5,7 @@ from PIL import Image
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
 import torch.nn.functional as F
+from torchvision.utils import save_image
 
 parser = argparse.ArgumentParser()
 
