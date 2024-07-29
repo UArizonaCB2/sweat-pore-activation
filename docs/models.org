@@ -38,7 +38,7 @@ This model has been trained with images annoted by small brushes to avoid the pr
  * Recall - 0.57
  * F-Score - 0.53
 
- ** SimpleCNN-SmallBrush-v3
+** SimpleCNN-SmallBrush-v3
 This model has been trained with images annoted by small brushes to avoid the problem of overlapping countors.
 *** Parameters
  * Epochs - 200

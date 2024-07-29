@@ -1,9 +1,9 @@
 import torch.nn as nn
 
-class SimpleCNN(nn.Module):
+class SimpleCNN_p32(nn.Module):
     def __init__(self):
         # Call the initializer for the parent class
-        super(SimpleCNN, self).__init__()
+        super(SimpleCNN_p32, self).__init__()
         self.conv1 = nn.Conv2d(1,6,3)     # in_channnels = 1 / out_channels = 6 / kernel size = 3
         self.conv2 = nn.Conv2d(6,16,3)    # 6 ---> 16
         self.maxpool = nn.MaxPool2d(2, 2) # kernel size = 2 / strides = 2

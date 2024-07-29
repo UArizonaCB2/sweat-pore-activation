@@ -1,6 +1,6 @@
 import os, argparse, torch
 from torch.utils.data import Dataset, DataLoader
-from CNNs import SimpleCNN
+from CNNs import SimpleCNN_p32
 from PIL import Image
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
@@ -67,10 +67,10 @@ class algorithm:
     
     def recreate_model_architecture(cnn_name):
         # Recreate the model architecture for loading cnn models
-        architecture = cnn_name.split("_")[0]
+        architecture = cnn_name.split("_e")[0]
         
         cnn_models = {
-        "SimpleCNN": SimpleCNN.SimpleCNN()}
+        "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32()}
         
         if architecture in cnn_models:
             cnnModel = cnn_models[architecture]

@@ -8,7 +8,7 @@ from torchvision import transforms
 import torch.optim as optim
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
-from CNNs import SimpleCNN # Need to be Fixed 
+from CNNs import SimpleCNN_p32 # Need to be Fixed 
 
 
 
@@ -83,7 +83,7 @@ class algorithm:
         all the potential models in dictionary and return it
         """
         cnn_models = {
-        "SimpleCNN": SimpleCNN.SimpleCNN()}
+        "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32()}
         
         if cnn_name in cnn_models:
             cnnModel = cnn_models[cnn_name]
@@ -169,7 +169,7 @@ class algorithm:
     trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
     
     # Save the model
-    modelName = f'{cnn_name}_p{patchSize}_e{num_epochs}'
+    modelName = f'{cnn_name}_e{num_epochs}'
     torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
     
     def evaluateModel(test_loader, device, model):
