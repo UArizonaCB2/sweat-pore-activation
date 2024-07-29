@@ -1,5 +1,5 @@
 # Import libraries
-import os, argparse, torch, importlib
+import os, argparse, torch, importlib, cv2
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
@@ -176,6 +176,9 @@ class algorithm:
         # set the model to evaluation mode 
         model.eval()
         
+        # Save the fp, fn, tp, tn images into local directory
+        matrixDir = 'results/ConfusionMatrix'
+        
         fp_names = [] # Image names for false.
         fn_names = [] # Images where we missed predicting the pore.
         tp_names = []
@@ -207,15 +210,19 @@ class algorithm:
                 for i in range(len(labels)):
                     if predicted_classes[i].item() == labels[i].item() == 1:
                         tp_names.append(names[i])
+                        # cv2.imwrite(f"{matrixDir}/TP",images[i])
                         TP += 1
                     elif predicted_classes[i].item() == labels[i].item() == 0:
                         tn_names.append(names[i])
+                        # cv2.imwrite(f"{matrixDir}/TN",images[i])
                         TN += 1
                     elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
-                        fp_names.append(names[i]) # Keep track of the fp 
+                        fp_names.append(names[i]) # Keep track of the fp
+                        # cv2.imwrite(f"{matrixDir}/FP",images[i]) 
                         FP += 1
                     else:
                         fn_names.append(names[i]) # Keep track of the fn
+                        # cv2.imwrite(f"{matrixDir}/FN",images[i])
                         FN += 1
                         
         confusionMatric["TP: "] = TP
@@ -225,7 +232,7 @@ class algorithm:
                 
         return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
-    fp, fn, _, _, results= evaluateModel(test_loader, device, trainedModel)
+    fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
     
     print(fp)
     print(fn)
@@ -268,5 +275,5 @@ class algorithm:
     
     ConfusionMatrix(results, modelName)
 
-if __name__ == "__main__":
+if __name__ == "__main__":        
     algorithm()
