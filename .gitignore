@@ -2,5 +2,5 @@
 env/
 local_images
 .DS_Stor
-results/ConfusionMatrix/*
+results/*
 Preprocessing/output_patches/patch_size/*

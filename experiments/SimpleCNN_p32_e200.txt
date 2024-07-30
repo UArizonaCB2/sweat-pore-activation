@@ -1,7 +1,7 @@
 --- Confusion Matrix ---
 Model: SimpleCNN_p32_e200
-TP:106, TN:716, FP:134, FN:68
-Accuracy: 0.8027
-Precision: 0.4417
-Recall: 0.6092
-F-score: 0.5121
+TP:112, TN:728, FP:102, FN:82
+Accuracy: 0.8203
+Precision: 0.5234
+Recall: 0.5773
+F-score: 0.5490
