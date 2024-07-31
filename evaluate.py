@@ -157,7 +157,7 @@ class algorithm:
                         # Save the image
                         save_image(images[0], full_path)
                     
-                        tp_names.append(images[i])
+                        tp_names.append(names[i])
                         TP += 1
                     elif predicted_classes[i].item() == labels[i].item() == 0:
                         # Create the full path for the image file
@@ -166,7 +166,7 @@ class algorithm:
                         full_path = os.path.join(save_dir, filename)
                         # Save the image
                         save_image(images[0], full_path)
-                        tn_names.append(images[i])
+                        tn_names.append(names[i])
                         TN += 1
                     elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
                         # Create the full path for the image file
@@ -175,7 +175,7 @@ class algorithm:
                         full_path = os.path.join(save_dir, filename)
                         # Save the image
                         save_image(images[0], full_path)
-                        fp_names.append(images[i]) # Keep track of the fp
+                        fp_names.append(names[i]) # Keep track of the fp
                         FP += 1
                     else:
                         # Create the full path for the image file
@@ -184,7 +184,7 @@ class algorithm:
                         full_path = os.path.join(save_dir, filename)
                         # Save the image
                         save_image(images[0], full_path)
-                        fn_names.append(images[i]) # Keep track of the fn
+                        fn_names.append(names[i]) # Keep track of the fn
                         FN += 1
                         
         confusionMatric["TP: "] = TP
