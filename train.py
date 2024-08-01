@@ -136,6 +136,7 @@ class algorithm:
     print(f"Image names: {Z[0]}")
     
     # Define the loss function and optimizer 
+    # torch.Tensor(no sweatpores, has sweatpores) ---> imbalance ratio
     loss_fn = nn.CrossEntropyLoss(weight = torch.Tensor([1.0,4.0]).to('mps'))
     optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
     
