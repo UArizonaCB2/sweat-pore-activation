@@ -135,9 +135,30 @@ class algorithm:
     print(f"Lable: {Y[0]}")
     print(f"Image names: {Z[0]}")
     
+    def ratio_of_labels(dataloader):
+        """
+        Param: dataloader
+        Return: Tensor that contains the ratio for labels
+        This function counts the labels from the dataloaders
+        """
+        label_0 = 0 # Does not have sweat pores
+        label_1 = 0 # Has sweat pores
+        
+        for data in dataloader:
+            _, labels, _ = data  # labels is a tensor with the length of batch size 
+            
+            for label in labels:
+                if label == 0:
+                    label_0+=1
+                elif label == 1:
+                    label_1 += 1
+        
+        rate = (label_0/label_1)
+        ratio = torch.Tensor([1.0, rate])
+        return ratio
+    
     # Define the loss function and optimizer 
-    # torch.Tensor(no sweatpores, has sweatpores) ---> imbalance ratio
-    loss_fn = nn.CrossEntropyLoss(weight = torch.Tensor([1.0,4.0]).to('mps'))
+    loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
     optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
     
     def trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn):

@@ -113,10 +113,9 @@ class algorithm:
     
     # Use train-test-split
     # Split the data -- Train Validate Test
-    # train_data, test_data = train_test_split(dataset, test_size=0.2, train_size=0.8)
-    
+    # train_data, test_data = train_test_split(dataset, test_size=0.2, train_size=0.8)s
     test_loader = DataLoader(dataset, batch_size = batchSize, shuffle = True, num_workers = 0)
-    
+
     def evaluateModel(test_loader, device, model):
         model = model.to(device)
         
