@@ -7,7 +7,7 @@ from PIL import Image
 from torchvision import transforms
 import torch.optim as optim
 import torch.nn as nn
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 from CNNs import SimpleCNN_p32, SimpleCNN_p17 # Need to be Fixed 
 
 
