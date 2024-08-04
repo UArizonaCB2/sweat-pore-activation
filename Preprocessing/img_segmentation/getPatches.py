@@ -240,7 +240,6 @@ class GetPatches:
                         has_sweat_pore = True
                         pores_count += 1
                         
-                
                 # Use the appropriate label based on whether a sweat pore was found
                 # label = 1 if has_sweat_pore else 0
                 if has_sweat_pore:
@@ -255,7 +254,7 @@ class GetPatches:
                  
         print("-- Summary --")
         print(f"Image name: {image_name}")
-        print("Image Shape:", "(",img_height, img_width,")")
+        print("Image Shape:", "(",img_width, img_height,")")
         print("Total Sweat Pore Coordinates: ",len(self.centroid_lst), "| Sweat Pores Count: ",pores_count)
         print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
               "| Batches Count: ",num_batch_count)
