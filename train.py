@@ -31,11 +31,14 @@ parser.add_argument('--CNN',
 
 parser.add_argument('--epochs',
                     default=200, 
-                    type=int, )
+                    type=int)
 
 parser.add_argument('--device',
                     default="mps", 
                     type=str)
+
+parser.add_argument('--tag',
+                    default=None)
 
 args = parser.parse_args()
 
@@ -193,7 +196,10 @@ class algorithm:
     trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
     
     # Save the model
-    modelName = f'{cnn_name}_e{num_epochs}'
+    if args.tag is None:
+        modelName = f'{cnn_name}_e{num_epochs}'
+    else: 
+        modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
     torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
     
     def evaluateModel(test_loader, device, model):
