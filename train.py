@@ -138,162 +138,175 @@ class algorithm:
     print(f"Lable: {Y[0]}")
     print(f"Image names: {Z[0]}")
     
-    def ratio_of_labels(dataloader):
-        """
-        Param: dataloader
-        Return: Tensor that contains the ratio for labels
-        This function counts the labels from the dataloaders
-        """
-        label_0 = 0 # Does not have sweat pores
-        label_1 = 0 # Has sweat pores
+    # def ratio_of_labels(dataloader):
+    #     """
+    #     Param: dataloader
+    #     Return: Tensor that contains the ratio for labels
+    #     This function counts the labels from the dataloaders
+    #     """
+    #     label_0 = 0 # Does not have sweat pores
+    #     label_1 = 0 # Has sweat pores
         
-        for data in dataloader:
-            _, labels, _ = data  # labels is a tensor with the length of batch size 
+    #     for data in dataloader:
+    #         _, labels, _ = data  # labels is a tensor with the length of batch size 
             
-            for label in labels:
-                if label == 0:
-                    label_0+=1
-                elif label == 1:
-                    label_1 += 1
+    #         for label in labels:
+    #             if label == 0:
+    #                 label_0+=1
+    #             elif label == 1:
+    #                 label_1 += 1
         
-        rate = (label_0/label_1)
-        ratio = torch.Tensor([1.0, rate])
-        return ratio
+    #     rate = (label_0/label_1)
+    #     ratio = torch.Tensor([1.0, rate])
+    #     return ratio
     
-    # Define the loss function and optimizer 
-    loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
-    optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
+    # # Define the loss function and optimizer 
+    # loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
+    # optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
     
-    def trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn):
-        cnnModel.to(device)
-        train_loss = []
-        for epoch in range(num_epochs):
-            # set the model to train
-            cnnModel.train()
-            running_loss = 0.0
-            for images, labels, _ in train_loader:
-                # Move inputs and labels to the device
-                images, labels = images.to(device), labels.to(device)
+    # def trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn):
+    #     cnnModel.to(device)
+    #     train_loss = []
+    #     for epoch in range(num_epochs):
+    #         # set the model to train
+    #         cnnModel.train()
+    #         running_loss = 0.0
+    #         for images, labels, _ in train_loader:
+    #             # Move inputs and labels to the device
+    #             images, labels = images.to(device), labels.to(device)
                 
-                # foward Propagation 
-                optimizer.zero_grad() # Reset the gradient from the previous calculation
-                outputs = cnnModel(images)
-                loss = loss_fn(outputs, labels)
+    #             # foward Propagation 
+    #             optimizer.zero_grad() # Reset the gradient from the previous calculation
+    #             outputs = cnnModel(images)
+    #             loss = loss_fn(outputs, labels)
 
-                # Back Propagation ---> Update the model weights/bias in each steps
-                loss.backward()
-                optimizer.step()
+    #             # Back Propagation ---> Update the model weights/bias in each steps
+    #             loss.backward()
+    #             optimizer.step()
 
-                # Keep track of the running loss
-                running_loss += loss.item() * labels.size(0)
+    #             # Keep track of the running loss
+    #             running_loss += loss.item() * labels.size(0)
         
-            train_loss = running_loss / len(train_loader.dataset)
-            print(f"\rEpoch {epoch+1}/{num_epochs} - Train loss: {train_loss}", end='', flush=True)
+    #         train_loss = running_loss / len(train_loader.dataset)
+    #         print(f"\rEpoch {epoch+1}/{num_epochs} - Train loss: {train_loss}", end='', flush=True)
 
-        print()
-        return cnnModel
+    #     print()
+    #     return cnnModel
     
-    trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
+    # trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
     
-    # Save the model
-    if args.tag is None:
-        modelName = f'{cnn_name}_e{num_epochs}'
-    else: 
-        modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
-    torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
+    # # Save the model
+    # if args.tag is None:
+    #     modelName = f'{cnn_name}_e{num_epochs}'
+    # else: 
+    #     modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
+    # torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
     
-    def evaluateModel(test_loader, device, model):
-        # set the model to evaluation mode 
-        model.eval()
+    # def evaluateModel(test_loader, device, model):
+    #     # set the model to evaluation mode 
+    #     model.eval()
         
-        fp_names = [] # Image names for false.
-        fn_names = [] # Images where we missed predicting the pore.
-        tp_names = []
-        tn_names = []
-        confusionMatric = { # Dict of confusion matix
-            "TP: ":0,
-            "TN: ":0,
-            "FP: ":0,
-            "FN: ":0}
+    #     fp_names = [] # Image names for false.
+    #     fn_names = [] # Images where we missed predicting the pore.
+    #     tp_names = []
+    #     tn_names = []
+    #     confusionMatric = { # Dict of confusion matix
+    #         "TP: ":0,
+    #         "TN: ":0,
+    #         "FP: ":0,
+    #         "FN: ":0}
 
-        TP = 0
-        TN = 0
-        FP = 0
-        FN = 0
+    #     TP = 0
+    #     TN = 0
+    #     FP = 0
+    #     FN = 0
 
-        # disable gradient calculation
-        with torch.no_grad():
-            for images, labels, names in test_loader:
-                images, labels = images.to(device), labels.to(device)
+    #     # disable gradient calculation
+    #     with torch.no_grad():
+    #         for images, labels, names in test_loader:
+    #             images, labels = images.to(device), labels.to(device)
                 
-                prediction = model(images)
+    #             prediction = model(images)
 
-                # Apply softmax to convert the raw logits into probabilities
-                probabilities = F.softmax(prediction, dim=1)
+    #             # Apply softmax to convert the raw logits into probabilities
+    #             probabilities = F.softmax(prediction, dim=1)
 
-                # Finds the highest probabilities for each image
-                _, predicted_classes = torch.max(probabilities, 1)
+    #             # Finds the highest probabilities for each image
+    #             _, predicted_classes = torch.max(probabilities, 1)
 
-                for i in range(len(labels)):
-                    if predicted_classes[i].item() == labels[i].item() == 1:
-                        tp_names.append(names[i])
-                        TP += 1
-                    elif predicted_classes[i].item() == labels[i].item() == 0:
-                        tn_names.append(names[i])
-                        TN += 1
-                    elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
-                        fp_names.append(names[i]) # Keep track of the fp
-                        FP += 1
-                    else:
-                        fn_names.append(names[i]) # Keep track of the fn
-                        FN += 1
+    #             for i in range(len(labels)):
+    #                 if predicted_classes[i].item() == labels[i].item() == 1:
+    #                     tp_names.append(names[i])
+    #                     TP += 1
+    #                 elif predicted_classes[i].item() == labels[i].item() == 0:
+    #                     tn_names.append(names[i])
+    #                     TN += 1
+    #                 elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
+    #                     fp_names.append(names[i]) # Keep track of the fp
+    #                     FP += 1
+    #                 else:
+    #                     fn_names.append(names[i]) # Keep track of the fn
+    #                     FN += 1
                         
-        confusionMatric["TP: "] = TP
-        confusionMatric["FP: "] = FP
-        confusionMatric["TN: "] = TN
-        confusionMatric["FN: "] = FN
+    #     confusionMatric["TP: "] = TP
+    #     confusionMatric["FP: "] = FP
+    #     confusionMatric["TN: "] = TN
+    #     confusionMatric["FN: "] = FN
                 
-        return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
+    #     return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
-    fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
+    # fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
     
-    def ConfusionMatrix(results, modelName):
-        TP, TN, FP, FN = results
+    # def ConfusionMatrix(results, modelName):
+    #     TP, TN, FP, FN = results
         
-        # Create the full file path
-        file_path = os.path.join('experiments/', modelName+'.txt')
+    #     # Create the full file path
+    #     file_path = os.path.join('experiments/', modelName+'.txt')
 
-        with open(file_path, 'w') as f:
-            f.write("--- Confusion Matrix ---\n")
-            f.write(f"Model: {modelName}\n")
-            f.write(f"TP:{TP}, TN:{TN}, FP:{FP}, FN:{FN}\n")
+    #     with open(file_path, 'w') as f:
+    #         f.write("--- Confusion Matrix ---\n")
+    #         f.write(f"Model: {modelName}\n")
+    #         f.write(f"TP:{TP}, TN:{TN}, FP:{FP}, FN:{FN}\n")
             
-            if TP + FP + FN + TN > 0:
-                accuracy = (TP + TN) / (TP + FP + FN + TN)
-                f.write(f"Accuracy: {accuracy:.4f}\n")
-            else:
-                f.write("Accuracy: N/A\n")
+    #         if TP + FP + FN + TN > 0:
+    #             accuracy = (TP + TN) / (TP + FP + FN + TN)
+    #             f.write(f"Accuracy: {accuracy:.4f}\n")
+    #         else:
+    #             f.write("Accuracy: N/A\n")
             
-            if TP + FP > 0:
-                precision = TP / (TP + FP)
-                f.write(f"Precision: {precision:.4f}\n")
-            else:
-                f.write("Precision: N/A (no positive predictions)\n")
+    #         if TP + FP > 0:
+    #             precision = TP / (TP + FP)
+    #             f.write(f"Precision: {precision:.4f}\n")
+    #         else:
+    #             f.write("Precision: N/A (no positive predictions)\n")
 
-            if TP + FN > 0:
-                recall = TP / (TP + FN)
-                f.write(f"Recall: {recall:.4f}\n")
-            else:
-                f.write("Recall: N/A (no actual positive samples)\n")
+    #         if TP + FN > 0:
+    #             recall = TP / (TP + FN)
+    #             f.write(f"Recall: {recall:.4f}\n")
+    #         else:
+    #             f.write("Recall: N/A (no actual positive samples)\n")
 
-            if precision + recall > 0:
-                f1 = 2 * (precision * recall) / (precision + recall)
-                f.write(f"F-score: {f1:.4f}\n")
-            else:
-                f.write("F-score: N/A (precision and recall are both zero)\n")
+    #         if precision + recall > 0:
+    #             f1 = 2 * (precision * recall) / (precision + recall)
+    #             f.write(f"F-score: {f1:.4f}\n")
+    #         else:
+    #             f.write("F-score: N/A (precision and recall are both zero)\n")
+    #     return 
+    
+    # ConfusionMatrix(results, modelName)
+    
+    def stratified_KFold(dataset):
+        """
+        1. Splits the dataset into k folds
+        2. For each iteration, use 9 folds for training, and 1 fold for testing
+        3. Train the model on the aggregated 9 folds
+        4. Evaluate on the model on the one fold 
+        5. store the results 
+        """
+        print("stratified KFold")
         return 
     
-    ConfusionMatrix(results, modelName)
+    stratified_KFold(dataset)
 
 if __name__ == "__main__":        
     algorithm()
