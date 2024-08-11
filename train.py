@@ -1,7 +1,7 @@
 # Import libraries
 import os, argparse, torch, importlib, cv2
 from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, SubsetRandomSampler
 import torch.nn.functional as F
 from PIL import Image
 from torchvision import transforms
@@ -295,7 +295,7 @@ class algorithm:
     
     # ConfusionMatrix(results, modelName)
     
-    def stratified_KFold(dataset):
+    def stratified_KFold_loader(dataset, batchSize=batchSize):
         """
         1. Splits the dataset into k folds
         2. For each iteration, use 9 folds for training, and 1 fold for testing
@@ -303,10 +303,29 @@ class algorithm:
         4. Evaluate on the model on the one fold 
         5. store the results 
         """
+        print()
         print("stratified KFold")
-        return 
+        print(dataset[0])
+        
+        # Extract tensors and label for stratification into a list
+        tensors = [data[1] for data in dataset]
+        labels = [data[1] for data in dataset]
+        
+        SKF = StratifiedKFold(n_splits = 5, shuffle=True, random_state=42)
+        
+        # iterate through each fold
+        for fold, (train_idx, test_idx) in enumerate(SKF.split(tensors, labels)):
+            # when we use the dataloader, it randomly samples from these indices.
+            train_sampler = SubsetRandomSampler(train_idx)
+            test_sampler = SubsetRandomSampler(test_idx)
+            
+            # pass the train and test dataloader from the specify samplers
+            train_loader = DataLoader(dataset, batch_size=batchSize, sample=train_sampler)
+            test_loader = DataLoader(dataset, batch_size=batchSize, sample=test_sampler)
+            
+            yield fold, train_loader, test_loader
     
-    stratified_KFold(dataset)
+    stratified_KFold_loader(dataset, batchSize=batchSize)
 
 if __name__ == "__main__":        
     algorithm()
