@@ -297,35 +297,72 @@ class algorithm:
     
     def stratified_KFold_loader(dataset, batchSize=batchSize):
         """
-        1. Splits the dataset into k folds
-        2. For each iteration, use 9 folds for training, and 1 fold for testing
-        3. Train the model on the aggregated 9 folds
-        4. Evaluate on the model on the one fold 
-        5. store the results 
+        This function takes a dataset and batchSize and returns fold and dataloaders
+        Dataloaders: train_loader, test_loader
+                    each loader should have a similar distributed labels
         """
-        print()
-        print("stratified KFold")
-        print(dataset[0])
-        
         # Extract tensors and label for stratification into a list
         tensors = [data[1] for data in dataset]
         labels = [data[1] for data in dataset]
         
-        SKF = StratifiedKFold(n_splits = 5, shuffle=True, random_state=42)
+        skf = StratifiedKFold(n_splits = 5, shuffle=True, random_state=42)
         
         # iterate through each fold
-        for fold, (train_idx, test_idx) in enumerate(SKF.split(tensors, labels)):
+        for fold, (train_idx, val_idx) in enumerate(skf.split(tensors, labels)):
             # when we use the dataloader, it randomly samples from these indices.
             train_sampler = SubsetRandomSampler(train_idx)
-            test_sampler = SubsetRandomSampler(test_idx)
+            val_sampler = SubsetRandomSampler(val_idx)
             
             # pass the train and test dataloader from the specify samplers
-            train_loader = DataLoader(dataset, batch_size=batchSize, sample=train_sampler)
-            test_loader = DataLoader(dataset, batch_size=batchSize, sample=test_sampler)
+            train_loader = DataLoader(dataset, batch_size=batchSize, sampler=train_sampler)
+            val_loader = DataLoader(dataset, batch_size=batchSize, sampler=val_sampler)
             
-            yield fold, train_loader, test_loader
+            yield fold, train_loader, val_loader
+            
+    def analyze_dataloader(dataloader):
+        """
+        This functions takes arguments: fold and dataloader
+        """
+        all_labels = []
+        label0s = 0
+        label1s = 0
+        total_samples = 0
+        
+        for batch in dataloader:
+            features, labels, names = batch
+            
+            # Convert labels to a list and extend all_labels
+            all_labels.extend(labels.tolist())
+
+            total_samples+=len(labels)
+
+        for label in all_labels:
+            if label == 0:
+                label0s +=1
+            elif label == 1:
+                label1s +=1  
+                
+        print(f'label 0: {label0s} | label 1: {label1s}')      
+        return 
     
-    stratified_KFold_loader(dataset, batchSize=batchSize)
+    
+    # iterate through each fold from "trainning dataset"
+    for fold, train_loader, val_loader in stratified_KFold_loader(train_data, batchSize=batchSize):
+        #  ---  analyze dataloader  ---  #
+        print(f'fold{fold+1}')
+        print("Train_loader")
+        analyze_dataloader(train_loader)
+        print("Validate_loader")
+        analyze_dataloader(val_loader)
+        
+        
+
+            
+        
+        
+        
+    
+    
 
 if __name__ == "__main__":        
     algorithm()
