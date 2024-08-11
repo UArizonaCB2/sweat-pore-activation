@@ -138,60 +138,60 @@ class algorithm:
     print(f"Lable: {Y[0]}")
     print(f"Image names: {Z[0]}")
     
-    # def ratio_of_labels(dataloader):
-    #     """
-    #     Param: dataloader
-    #     Return: Tensor that contains the ratio for labels
-    #     This function counts the labels from the dataloaders
-    #     """
-    #     label_0 = 0 # Does not have sweat pores
-    #     label_1 = 0 # Has sweat pores
+    def ratio_of_labels(dataloader):
+        """
+        Param: dataloader
+        Return: Tensor that contains the ratio for labels
+        This function counts the labels from the dataloaders
+        """
+        label_0 = 0 # Does not have sweat pores
+        label_1 = 0 # Has sweat pores
         
-    #     for data in dataloader:
-    #         _, labels, _ = data  # labels is a tensor with the length of batch size 
+        for data in dataloader:
+            _, labels, _ = data  # labels is a tensor with the length of batch size 
             
-    #         for label in labels:
-    #             if label == 0:
-    #                 label_0+=1
-    #             elif label == 1:
-    #                 label_1 += 1
+            for label in labels:
+                if label == 0:
+                    label_0+=1
+                elif label == 1:
+                    label_1 += 1
         
-    #     rate = (label_0/label_1)
-    #     ratio = torch.Tensor([1.0, rate])
-    #     return ratio
+        rate = (label_0/label_1)
+        ratio = torch.Tensor([1.0, rate])
+        return ratio
     
-    # # Define the loss function and optimizer 
-    # loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
-    # optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
+    # Define the loss function and optimizer 
+    loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
+    optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
     
-    # def trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn):
-    #     cnnModel.to(device)
-    #     train_loss = []
-    #     for epoch in range(num_epochs):
-    #         # set the model to train
-    #         cnnModel.train()
-    #         running_loss = 0.0
-    #         for images, labels, _ in train_loader:
-    #             # Move inputs and labels to the device
-    #             images, labels = images.to(device), labels.to(device)
+    def trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn):
+        cnnModel.to(device)
+        train_loss = []
+        for epoch in range(num_epochs):
+            # set the model to train
+            cnnModel.train()
+            running_loss = 0.0
+            for images, labels, _ in train_loader:
+                # Move inputs and labels to the device
+                images, labels = images.to(device), labels.to(device)
                 
-    #             # foward Propagation 
-    #             optimizer.zero_grad() # Reset the gradient from the previous calculation
-    #             outputs = cnnModel(images)
-    #             loss = loss_fn(outputs, labels)
+                # foward Propagation 
+                optimizer.zero_grad() # Reset the gradient from the previous calculation
+                outputs = cnnModel(images)
+                loss = loss_fn(outputs, labels)
 
-    #             # Back Propagation ---> Update the model weights/bias in each steps
-    #             loss.backward()
-    #             optimizer.step()
+                # Back Propagation ---> Update the model weights/bias in each steps
+                loss.backward()
+                optimizer.step()
 
-    #             # Keep track of the running loss
-    #             running_loss += loss.item() * labels.size(0)
+                # Keep track of the running loss
+                running_loss += loss.item() * labels.size(0)
         
-    #         train_loss = running_loss / len(train_loader.dataset)
-    #         print(f"\rEpoch {epoch+1}/{num_epochs} - Train loss: {train_loss}", end='', flush=True)
+            train_loss = running_loss / len(train_loader.dataset)
+            print(f"\rEpoch {epoch+1}/{num_epochs} - Train loss: {train_loss}", end='', flush=True)
 
-    #     print()
-    #     return cnnModel
+        print()
+        return cnnModel
     
     # trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
     
@@ -345,7 +345,6 @@ class algorithm:
         print(f'label 0: {label0s} | label 1: {label1s}')      
         return 
     
-    
     # iterate through each fold from "trainning dataset"
     for fold, train_loader, val_loader in stratified_KFold_loader(train_data, batchSize=batchSize):
         #  ---  analyze dataloader  ---  #
@@ -354,6 +353,10 @@ class algorithm:
         analyze_dataloader(train_loader)
         print("Validate_loader")
         analyze_dataloader(val_loader)
+        print()
+        #  ----------------------------  #
+        
+        
         
         
 
