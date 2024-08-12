@@ -342,7 +342,7 @@ class algorithm:
             elif label == 1:
                 label1s +=1  
                 
-        print(f'label 0: {label0s} | label 1: {label1s}')      
+        print(f'(label 0: {label0s} , label 1: {label1s})')      
         return 
     
     def PrintConfusionMatrix(results, modelName):
@@ -377,24 +377,62 @@ class algorithm:
             print("F-score: N/A (precision and recall are both zero)\n")
         return 
     
+    def average_model_states(model_states):
+        """
+        Average the states of multiple models.
+        Args:
+        model_states (list): A list of model state dictionaries.
+        Returns:
+        dict: A state dictionary containing the averaged model parameters.
+        """
+        avg_state = {}
+        
+        # Get the keys (layer names) from the first state dict
+        keys = model_states[0].keys()
+        
+        for key in keys:
+            # Stack all tensors for this key across models
+            stacked = torch.stack([state[key] for state in model_states])
+            # Compute the mean along the first dimension (across models)
+            avg_state[key] = torch.mean(stacked, dim=0)
+        
+        return avg_state
+    
+    # Save the states of the trained model
+    all_model_states = []
+    
     # iterate through each fold from "trainning dataset"
     for fold, train_loader, val_loader in stratified_KFold_loader(train_data, batchSize=batchSize):
         #  ---  analyze dataloader  ---  #
-        print(f'fold{fold+1}')
-        print("Train_loader")
+        print(f' -- Fold{fold+1} -- ')
+        print('Train_loader: ')
         analyze_dataloader(train_loader)
-        print("Validate_loader")
+        print('Validate_loader: ')
         analyze_dataloader(val_loader)
         #  ----------------------------  #
         
         # train the model --->. train_loader
         trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
         
+        # Save the dictionary containing the state of the model 
+        all_model_states.append(trainedModel.state_dict())
+        
         # validate the model ---> val_loader
         fp, fn, tn, tp, results= evaluateModel(val_loader, device, trainedModel)
         
         PrintConfusionMatrix(results, cnn_name)
         print()
+    
+    # Save the avg model state
+    if args.tag is None:
+        modelName = f'{cnn_name}_e{num_epochs}'
+    else: 
+        modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
+    # Caculate the average state of the modelss
+    avg_model_state = average_model_states(all_model_states)
+    torch.save(avg_model_state, f'models/{modelName}.model')
+        
+    
         
         
         
