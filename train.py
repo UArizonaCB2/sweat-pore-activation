@@ -202,58 +202,58 @@ class algorithm:
     #     modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
     # torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
     
-    # def evaluateModel(test_loader, device, model):
-    #     # set the model to evaluation mode 
-    #     model.eval()
+    def evaluateModel(test_loader, device, model):
+        # set the model to evaluation mode 
+        model.eval()
         
-    #     fp_names = [] # Image names for false.
-    #     fn_names = [] # Images where we missed predicting the pore.
-    #     tp_names = []
-    #     tn_names = []
-    #     confusionMatric = { # Dict of confusion matix
-    #         "TP: ":0,
-    #         "TN: ":0,
-    #         "FP: ":0,
-    #         "FN: ":0}
+        fp_names = [] # Image names for false.
+        fn_names = [] # Images where we missed predicting the pore.
+        tp_names = []
+        tn_names = []
+        confusionMatric = { # Dict of confusion matix
+            "TP: ":0,
+            "TN: ":0,
+            "FP: ":0,
+            "FN: ":0}
 
-    #     TP = 0
-    #     TN = 0
-    #     FP = 0
-    #     FN = 0
+        TP = 0
+        TN = 0
+        FP = 0
+        FN = 0
 
-    #     # disable gradient calculation
-    #     with torch.no_grad():
-    #         for images, labels, names in test_loader:
-    #             images, labels = images.to(device), labels.to(device)
+        # disable gradient calculation
+        with torch.no_grad():
+            for images, labels, names in test_loader:
+                images, labels = images.to(device), labels.to(device)
                 
-    #             prediction = model(images)
+                prediction = model(images)
 
-    #             # Apply softmax to convert the raw logits into probabilities
-    #             probabilities = F.softmax(prediction, dim=1)
+                # Apply softmax to convert the raw logits into probabilities
+                probabilities = F.softmax(prediction, dim=1)
 
-    #             # Finds the highest probabilities for each image
-    #             _, predicted_classes = torch.max(probabilities, 1)
+                # Finds the highest probabilities for each image
+                _, predicted_classes = torch.max(probabilities, 1)
 
-    #             for i in range(len(labels)):
-    #                 if predicted_classes[i].item() == labels[i].item() == 1:
-    #                     tp_names.append(names[i])
-    #                     TP += 1
-    #                 elif predicted_classes[i].item() == labels[i].item() == 0:
-    #                     tn_names.append(names[i])
-    #                     TN += 1
-    #                 elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
-    #                     fp_names.append(names[i]) # Keep track of the fp
-    #                     FP += 1
-    #                 else:
-    #                     fn_names.append(names[i]) # Keep track of the fn
-    #                     FN += 1
+                for i in range(len(labels)):
+                    if predicted_classes[i].item() == labels[i].item() == 1:
+                        tp_names.append(names[i])
+                        TP += 1
+                    elif predicted_classes[i].item() == labels[i].item() == 0:
+                        tn_names.append(names[i])
+                        TN += 1
+                    elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
+                        fp_names.append(names[i]) # Keep track of the fp
+                        FP += 1
+                    else:
+                        fn_names.append(names[i]) # Keep track of the fn
+                        FN += 1
                         
-    #     confusionMatric["TP: "] = TP
-    #     confusionMatric["FP: "] = FP
-    #     confusionMatric["TN: "] = TN
-    #     confusionMatric["FN: "] = FN
+        confusionMatric["TP: "] = TP
+        confusionMatric["FP: "] = FP
+        confusionMatric["TN: "] = TN
+        confusionMatric["FN: "] = FN
                 
-    #     return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
+        return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
     # fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
     
@@ -345,6 +345,38 @@ class algorithm:
         print(f'label 0: {label0s} | label 1: {label1s}')      
         return 
     
+    def PrintConfusionMatrix(results, modelName):
+        TP, TN, FP, FN = results
+
+        print("--- Confusion Matrix ---\n")
+        print(f"Model: {modelName}\n")
+        print(f"TP:{TP}, TN:{TN}, FP:{FP}, FN:{FN}\n")
+        
+        if TP + FP + FN + TN > 0:
+            accuracy = (TP + TN) / (TP + FP + FN + TN)
+            print(f"Accuracy: {accuracy:.4f}\n")
+        else:
+            print("Accuracy: N/A\n")
+        
+        if TP + FP > 0:
+            precision = TP / (TP + FP)
+            print(f"Precision: {precision:.4f}\n")
+        else:
+            print("Precision: N/A (no positive predictions)\n")
+
+        if TP + FN > 0:
+            recall = TP / (TP + FN)
+            print(f"Recall: {recall:.4f}\n")
+        else:
+            print("Recall: N/A (no actual positive samples)\n")
+
+        if precision + recall > 0:
+            f1 = 2 * (precision * recall) / (precision + recall)
+            print(f"F-score: {f1:.4f}\n")
+        else:
+            print("F-score: N/A (precision and recall are both zero)\n")
+        return 
+    
     # iterate through each fold from "trainning dataset"
     for fold, train_loader, val_loader in stratified_KFold_loader(train_data, batchSize=batchSize):
         #  ---  analyze dataloader  ---  #
@@ -353,8 +385,20 @@ class algorithm:
         analyze_dataloader(train_loader)
         print("Validate_loader")
         analyze_dataloader(val_loader)
-        print()
         #  ----------------------------  #
+        
+        # train the model --->. train_loader
+        trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
+        
+        # validate the model ---> val_loader
+        fp, fn, tn, tp, results= evaluateModel(val_loader, device, trainedModel)
+        
+        PrintConfusionMatrix(results, cnn_name)
+        print()
+        
+        
+        
+        
         
         
         
