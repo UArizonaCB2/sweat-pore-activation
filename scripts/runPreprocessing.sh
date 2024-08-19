@@ -9,3 +9,4 @@ patchesDir='Preprocessing/output_patches/patch_size'
 
 
 python Preprocessing/img_segmentation/getPatches.py --patchSize 32 --rawDir "$inputDirRaw" --annotatedDir "$inputDirAnnotated" --coordinatesDir "$coordinatesDir" --centroidsDir "$centroidsDir" --patchesDir "$patchesDir"
+# python Preprocessing/img_segmentation/prepareDataset.py
