@@ -95,25 +95,14 @@ class algorithm:
     
     # set the model to evaluation mode 
     trainedModel.eval()
-    
-    # Prepare data
-    # Create Transformation
-    """
-    Converting Images to Tensor and normalize the pixel values
-    """
-    trans = transforms.Compose([
-        transforms.Grayscale(),  # Convert RGB to grayscale 3 ---> 1 
-        transforms.ToTensor(), # Convert data to Tensor for dataloader
-        transforms.Normalize(mean=0.5, std=0.5) # scale the pixel values of the image between -1 and 1
-    ])
 
-    # Apply transformation on the dataset 
-    datadir = f'Preprocessing/output_patches/patch_size/{patchSize}X{patchSize}'
-    dataset = SweatPoresDataset(img_dir = datadir, transforms = trans)
+    # Load the testing dataset
+    test_data = torch.load('Preprocessing/dataset/test_indices.pt')
+    print(f'Total testing data: {len(test_data)}')
+    print()
     
-    # Use train-test-split
     # Split the data -- Train Validate Test
-    test_loader = DataLoader(dataset, batch_size = batchSize, shuffle = True, num_workers = 0)
+    test_loader = DataLoader(test_data, batch_size = batchSize, shuffle = True, num_workers = 0)
 
     def evaluateModel(test_loader, device, model):
         model = model.to(device)
