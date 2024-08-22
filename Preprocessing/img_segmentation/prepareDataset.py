@@ -54,7 +54,6 @@ if __name__ == "__main__":
     patchSize = args.patchSize
     train_size = args.TrainingPercentage
     test_size = args.TestingPercentage
-    # Build the custom dataset
     
     # Create Transformation
     """
