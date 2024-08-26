@@ -8,7 +8,7 @@ from torchvision import transforms
 import torch.optim as optim
 import torch.nn as nn
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from CNNs import SimpleCNN_p32, SimpleCNN_p17 # Need to be Fixed 
+from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32 # Need to be Fixed 
 
 
 
@@ -79,7 +79,8 @@ class algorithm:
         """
         cnn_models = {
         "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32(),
-        "SimpleCNN_p17": SimpleCNN_p17.SimpleCNN_p17()}
+        "SimpleCNN_p17": SimpleCNN_p17.SimpleCNN_p17(),
+        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32()}
         
         if cnn_name in cnn_models:
             cnnModel = cnn_models[cnn_name]
@@ -302,6 +303,10 @@ class algorithm:
         for key in keys:
             # Stack all tensors for this key across models
             stacked = torch.stack([state[key] for state in model_states])
+            
+            # Convert to float before computing mean
+            stacked = stacked.float()
+            
             # Compute the mean along the first dimension (across models)
             avg_state[key] = torch.mean(stacked, dim=0)
         
