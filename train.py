@@ -330,6 +330,7 @@ class algorithm:
         optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
         
         # train the model --->. train_loader
+        cnnModel = getModel(cnn_name) # create a new model instance for each fold 
         trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
         
         # Save the dictionary containing the state of the model 
