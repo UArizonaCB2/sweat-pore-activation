@@ -1,6 +1,6 @@
 # Import libraries
 import os, argparse, torch, importlib, cv2
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, random_split
 from torch.utils.data import DataLoader, SubsetRandomSampler
 import torch.nn.functional as F
 from PIL import Image
@@ -212,7 +212,7 @@ class algorithm:
                     each loader should have a similar distributed labels
         """
         # Extract tensors and label for stratification into a list
-        tensors = [data[1] for data in dataset]
+        tensors = [data[0] for data in dataset]
         labels = [data[1] for data in dataset]
         
         skf = StratifiedKFold(n_splits = 5, shuffle=True, random_state=42)
@@ -315,41 +315,54 @@ class algorithm:
     # Save the states of the trained model
     all_model_states = []
     
-    # iterate through each fold from "trainning dataset"
-    for fold, train_loader, val_loader in stratified_KFold_loader(train_data, batchSize=batchSize):
-        #  ---  analyze dataloader  ---  #
-        print(f' -- Fold{fold+1} -- ')
-        print('Train_loader: ')
-        analyze_dataloader(train_loader)
-        print('Validate_loader: ')
-        analyze_dataloader(val_loader)
-        #  ----------------------------  #
+    # # iterate through each fold from "trainning dataset"
+    # for fold, train_loader, val_loader in stratified_KFold_loader(train_data, batchSize=batchSize):
+    #     #  ---  analyze dataloader  ---  #
+    #     print(f' -- Fold{fold+1} -- ')
+    #     print('Train_loader: ')
+    #     analyze_dataloader(train_loader)
+    #     print('Validate_loader: ')
+    #     analyze_dataloader(val_loader)
+    #     #  ----------------------------  #
         
-        # Define the loss function and optimizer 
-        loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
-        optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
+    #     # Define the loss function and optimizer 
+    #     loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
+    #     optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
         
-        # train the model --->. train_loader
-        cnnModel = getModel(cnn_name) # create a new model instance for each fold 
-        trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
+    #     # train the model --->. train_loader
+    #     cnnModel = getModel(cnn_name) # create a new model instance for each fold 
+    #     trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
         
-        # Save the dictionary containing the state of the model 
-        all_model_states.append(trainedModel.state_dict())
+    #     # Save the dictionary containing the state of the model 
+    #     all_model_states.append(trainedModel.state_dict())
         
-        # validate the model ---> val_loader
-        fp, fn, tn, tp, results= validationModel(val_loader, device, trainedModel)
+    #     # validate the model ---> val_loader
+    #     fp, fn, tn, tp, results= validationModel(val_loader, device, trainedModel)
         
-        PrintConfusionMatrix(results, cnn_name)
-        print()
+    #     PrintConfusionMatrix(results, cnn_name)
+    #     print()
     
-    # Save the avg model state
-    if args.tag is None:
-        modelName = f'{cnn_name}_e{num_epochs}'
-    else: 
-        modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
-    # Caculate the average state of the modelss
-    avg_model_state = average_model_states(all_model_states)
-    torch.save(avg_model_state, f'models/{modelName}.model')
+    # # Save the avg model state
+    # if args.tag is None:
+    #     modelName = f'{cnn_name}_e{num_epochs}'
+    # else: 
+    #     modelName = f'{cnn_name}_e{num_epochs}_{args.tag}'
+    # # Caculate the average state of the modelss
+    # avg_model_state = average_model_states(all_model_states)
+    # torch.save(avg_model_state, f'models/{modelName}.model')
+    
+    
+    
+    # Testing my code run sucessfully (no stratified kFold)
+    # dataset -> dataloader 
+    train_loader = DataLoader(train_data, batch_size=batchSize, shuffle=True)
+    # Define the loss function and optimizer 
+    loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
+    optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
+    trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
+    modelName = f'{cnn_name}_e{num_epochs}_noFold'
+    torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
+    
 
 
 if __name__ == "__main__":        

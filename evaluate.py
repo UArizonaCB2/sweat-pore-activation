@@ -184,6 +184,8 @@ class algorithm:
     
     fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
     
+    print(f'False Negatives: {fn}')
+    
     def ConfusionMatrix(results, modelName):
         TP, TN, FP, FN = results
 
