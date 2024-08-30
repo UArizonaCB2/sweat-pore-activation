@@ -77,9 +77,9 @@ if __name__ == "__main__":
     testIndices = Subset(dataset, test_indices)
     
     # Save these dataset indices for memory efficiency
-    torch.save(dataset, f'Preprocessing/dataset/dataset.pt')
-    torch.save(trainIndices, f'Preprocessing/dataset/train_indices.pt')
-    torch.save(testIndices, f'Preprocessing/dataset/test_indices.pt')
+    torch.save(dataset, f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt')
+    torch.save(trainIndices, f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt')
+    torch.save(testIndices, f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
     
     
     # Testing out the dataset 

@@ -98,7 +98,7 @@ class algorithm:
     trainedModel.eval()
 
     # Load the testing dataset
-    test_data = torch.load('Preprocessing/dataset/test_indices.pt')
+    test_data = torch.load(f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
     print(f'Total testing data: {len(test_data)}')
     print()
     
@@ -122,10 +122,21 @@ class algorithm:
         TN = 0
         FP = 0
         FN = 0
-
+        
+        label0Length = 0
+        label1Length = 0
+        
         # disable gradient calculation
         with torch.no_grad():
             for images, labels, names in test_loader:
+                
+                # Count the labels
+                for label in labels: 
+                    if label == 0:
+                        label0Length+=1
+                    else:
+                        label1Length+=1
+                
                 images, labels = images.to(device), labels.to(device)
                 
                 prediction = model(images)
@@ -179,12 +190,11 @@ class algorithm:
         confusionMatric["FP: "] = FP
         confusionMatric["TN: "] = TN
         confusionMatric["FN: "] = FN
-                
+        print(f'Numbers of label0: {label0Length}')
+        print(f'Numbers of label1: {label1Length}')
         return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
     fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
-    
-    print(f'False Negatives: {fn}')
     
     def ConfusionMatrix(results, modelName):
         TP, TN, FP, FN = results

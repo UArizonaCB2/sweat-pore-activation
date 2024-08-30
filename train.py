@@ -97,7 +97,7 @@ class algorithm:
     device = args.device
     
     # Load the testing dataset
-    train_data = torch.load('Preprocessing/dataset/train_indices.pt')
+    train_data = torch.load(f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt')
     print(f'Total training data: {len(train_data)}')
     print()
     
