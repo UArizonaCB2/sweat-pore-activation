@@ -72,15 +72,9 @@ if __name__ == "__main__":
     # Split the data indices -- Train Validate Test
     train_indices, test_indices = train_test_split(range(len(dataset)), test_size=test_size, train_size=train_size)
     
-    # Subset objects can be directly used in Dataloader
-    trainIndices = Subset(dataset, train_indices)
-    testIndices = Subset(dataset, test_indices)
-    
-    # Save these dataset indices for memory efficiency
     torch.save(dataset, f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt')
-    torch.save(trainIndices, f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt')
-    torch.save(testIndices, f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
-    
+    torch.save(train_indices, f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt')
+    torch.save(test_indices, f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
     
     # Testing out the dataset 
     print(f"Total data: {len(dataset)}")
