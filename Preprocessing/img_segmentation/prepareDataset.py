@@ -66,7 +66,8 @@ if __name__ == "__main__":
     ])
     
     # Apply transformation on the dataset 
-    datadir = f'Preprocessing/output_patches/patch_size/{patchSize}X{patchSize}'
+    # datadir = f'Preprocessing/output_patches/patch_size/{patchSize}X{patchSize}'
+    datadir = f'Preprocessing/testingModel_output_patches/6bmp/patch_size/{patchSize}X{patchSize}'
     dataset = SweatPoresDataset(img_dir = datadir, transforms = trans)
     
     # Split the data indices -- Train Validate Test

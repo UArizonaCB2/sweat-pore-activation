@@ -1,5 +1,5 @@
 import os, argparse, torch
-from torch.utils.data import Dataset, DataLoader, Subset
+from torch.utils.data import Dataset, DataLoader, Subset, ConcatDataset 
 from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32
 from PIL import Image
 from sklearn.model_selection import train_test_split, StratifiedKFold
@@ -102,6 +102,29 @@ class algorithm:
     print(f'Total testing data: {len(test_data)}')
     print()
     
+    # Get the dataloaders: total_loader = train_loader(80%) + test_loader(20%)
+    def create_Dataloaders(dataset_path, train_indices_path, test_indices_path, batch_size=batchSize):
+        dataset = torch.load(dataset_path)
+        train_indices = torch.load(train_indices_path)
+        test_indices = torch.load(test_indices_path)
+        print(f'Total data: {len(dataset)}')
+        print(f'Total training data: {len(train_indices)}')
+        print(f'Total validating data: {len(test_indices)}')
+        
+        trainSubset = Subset(dataset, train_indices)
+        validateSubset = Subset(dataset, test_indices)
+        
+        total_loader = DataLoader(dataset, batch_size, shuffle=True)
+        train_loader = DataLoader(trainSubset, batch_size, shuffle=True)
+        validate_loader = DataLoader(validateSubset, batch_size, shuffle=True)
+        return total_loader, train_loader, validate_loader
+    total_loader, train_loader, test_loader = create_Dataloaders(
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt',
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt',
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
+    # ----------- # 
+    
+    
     # Split the data -- Train Validate Test
     test_loader = DataLoader(test_data, batch_size = batchSize, shuffle = True, num_workers = 0)
 
@@ -194,7 +217,7 @@ class algorithm:
         print(f'Numbers of label1: {label1Length}')
         return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
-    fp, fn, tn, tp, results= evaluateModel(test_loader, device, trainedModel)
+    fp, fn, tn, tp, results= evaluateModel(total_loader, device, trainedModel)
     
     def ConfusionMatrix(results, modelName):
         TP, TN, FP, FN = results

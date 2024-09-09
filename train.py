@@ -1,6 +1,6 @@
 # Import libraries
 import os, argparse, torch, importlib, cv2
-from torch.utils.data import Dataset, random_split
+from torch.utils.data import Dataset, random_split, Subset 
 from torch.utils.data import DataLoader, SubsetRandomSampler
 import torch.nn.functional as F
 from PIL import Image
@@ -100,6 +100,22 @@ class algorithm:
     train_data = torch.load(f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt')
     print(f'Total training data: {len(train_data)}')
     print()
+    
+    def create_Dataloaders(dataset_path, train_indices_path, test_indices_path, batch_size=batchSize):
+        dataset = torch.load(dataset_path)
+        train_indices = torch.load(train_indices_path)
+        test_indices = torch.load(test_indices_path)
+        print(f'Total data: {len(dataset)}')
+        print(f'Total training data: {len(train_indices)}')
+        print(f'Total validating data: {len(test_indices)}')
+        
+        trainSubset = Subset(dataset, train_indices)
+        validateSubset = Subset(dataset, test_indices)
+        
+        total_loader = DataLoader(dataset, batch_size, shuffle=True)
+        train_loader = DataLoader(trainSubset, batch_size, shuffle=True)
+        validate_loader = DataLoader(validateSubset, batch_size, shuffle=True)
+        return total_loader, train_loader, validate_loader
     
     def ratio_of_labels(dataloader):
         """
@@ -312,6 +328,12 @@ class algorithm:
         
         return avg_state
     
+    # Get the dataloaders: total_loader = train_loader(80%) + test_loader(20%)
+    total_loader, train_loader, validate_loader = create_Dataloaders(
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt',
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt',
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
+    
     # Save the states of the trained model
     all_model_states = []
     
@@ -354,12 +376,14 @@ class algorithm:
     
     
     # Testing my code run sucessfully (no stratified kFold)
-    # dataset -> dataloader 
-    train_loader = DataLoader(train_data, batch_size=batchSize, shuffle=True)
     # Define the loss function and optimizer 
     loss_fn = nn.CrossEntropyLoss(weight = ratio_of_labels(train_loader).to('mps'))
     optimizer = optim.SGD(cnnModel.parameters(), lr=0.001, momentum=0.9)
+    # train the model ---> test_loader
     trainedModel = trainModel(num_epochs, train_loader, device, cnnModel, optimizer, loss_fn)
+    # validate the model ---> val_loader
+    fp, fn, tn, tp, results= validationModel(validate_loader, device, trainedModel)
+    PrintConfusionMatrix(results, cnn_name)
     modelName = f'{cnn_name}_e{num_epochs}_noFold'
     torch.save(trainedModel.state_dict(), f'models/{modelName}.model')
     
