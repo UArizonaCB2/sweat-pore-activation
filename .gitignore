@@ -6,4 +6,4 @@ results/*
 Preprocessing/output_patches/patch_size/*
 Preprocessing/input_images/testingModel/*
 Preprocessing/testingModel_output_patches/*
-Preprocessing/dataset/32X32/*
+Preprocessing/dataset/*
