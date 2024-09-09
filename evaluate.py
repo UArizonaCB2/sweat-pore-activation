@@ -97,10 +97,10 @@ class algorithm:
     # set the model to evaluation mode 
     trainedModel.eval()
 
-    # Load the testing dataset
-    test_data = torch.load(f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
-    print(f'Total testing data: {len(test_data)}')
-    print()
+    # # Load the testing dataset
+    # test_data = torch.load(f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
+    # print(f'Total testing data: {len(test_data)}')
+    # print()
     
     # Get the dataloaders: total_loader = train_loader(80%) + test_loader(20%)
     def create_Dataloaders(dataset_path, train_indices_path, test_indices_path, batch_size=batchSize):
@@ -125,8 +125,8 @@ class algorithm:
     # ----------- # 
     
     
-    # Split the data -- Train Validate Test
-    test_loader = DataLoader(test_data, batch_size = batchSize, shuffle = True, num_workers = 0)
+    # # Split the data -- Train Validate Test
+    # test_loader = DataLoader(test_data, batch_size = batchSize, shuffle = True, num_workers = 0)
 
     def evaluateModel(test_loader, device, model):
         model = model.to(device)
@@ -215,6 +215,7 @@ class algorithm:
         confusionMatric["FN: "] = FN
         print(f'Numbers of label0: {label0Length}')
         print(f'Numbers of label1: {label1Length}')
+        print()
         return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
     fp, fn, tn, tp, results= evaluateModel(total_loader, device, trainedModel)
@@ -237,12 +238,18 @@ class algorithm:
             print(f"Precision: {precision:.4f}\n")
         else:
             print("Precision: N/A (no positive predictions)\n")
+            
+        if TN + FP > 0:
+            spec = TN / (TN + FP)
+            print(f"Specificity: {spec:.4f}\n")
+        else: 
+            print("Specificity: N/A (no positive predictions)\n")
 
         if TP + FN > 0:
             recall = TP / (TP + FN)
-            print(f"Recall: {recall:.4f}\n")
+            print(f"Sensitivity: {recall:.4f}\n")
         else:
-            print("Recall: N/A (no actual positive samples)\n")
+            print("Sensitivity: N/A (no actual positive samples)\n")
 
         if precision + recall > 0:
             f1 = 2 * (precision * recall) / (precision + recall)
