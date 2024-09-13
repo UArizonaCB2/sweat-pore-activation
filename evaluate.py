@@ -195,7 +195,7 @@ class algorithm:
         confusionMatric["TN: "] = TN
         confusionMatric["FN: "] = FN
         print(f'Patches with no Pores [label0]: {label0Length}')
-        print(f'Pathces have Pores [label1]: {label1Length}')
+        print(f'Patches have Pores [label1]: {label1Length}')
         print()
         return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
@@ -280,8 +280,8 @@ class algorithm:
         # tn_color will not be fill up any color
 
         currentPatchNum = 1 #patch number start with 1
-        for x in range(0, num_of_x_patches):
-            for y in range(0, num_of_y_patches):
+        for y in range(0, num_of_y_patches):
+            for x in range(0, num_of_x_patches):
                 # Calculate the coordinates of the current patch
                 x1 = x * patchSize
                 y1 = y * patchSize
@@ -312,7 +312,7 @@ class algorithm:
         initImg_rgb = cv2.cvtColor(initImg, cv2.COLOR_BGR2RGB)
         # Display the image
         plt.imshow(initImg_rgb)
-        plt.title("Image")
+        plt.title(f"Image: {predictedImg}")
         plt.axis('off')  # Hide axes
         plt.show()
         
