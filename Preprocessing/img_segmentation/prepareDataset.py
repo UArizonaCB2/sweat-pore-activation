@@ -10,6 +10,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--patchSize',
                     type=int)
 
+parser.add_argument('--processedImg',
+                    type=str)
+
 parser.add_argument('--TrainingPercentage',
                     default=0.8,
                     type=float)
@@ -52,6 +55,7 @@ class SweatPoresDataset(Dataset):
 if __name__ == "__main__":
     print("-- Dataset Info --")
     patchSize = args.patchSize
+    processedImg = args.processedImg
     train_size = args.TrainingPercentage
     test_size = args.TestingPercentage
     
@@ -67,7 +71,7 @@ if __name__ == "__main__":
     
     # Apply transformation on the dataset 
     # datadir = f'Preprocessing/output_patches/patch_size/{patchSize}X{patchSize}'
-    datadir = f'Preprocessing/testingModel_output_patches/6bmp/patch_size/{patchSize}X{patchSize}'
+    datadir = f'Preprocessing/testingModel_output_patches/{processedImg}/patch_size/{patchSize}X{patchSize}'
     dataset = SweatPoresDataset(img_dir = datadir, transforms = trans)
     
     # Split the data indices -- Train Validate Test
@@ -78,6 +82,7 @@ if __name__ == "__main__":
     torch.save(test_indices, f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
     
     # Testing out the dataset 
+    print(f"Preprocessing on the image: {processedImg}")
     print(f"Total data: {len(dataset)}")
     print(f"Training dataset: {len(train_indices)}")
     print(f"Testing dataset: {len(test_indices)}")

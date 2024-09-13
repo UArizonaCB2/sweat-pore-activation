@@ -288,4 +288,4 @@ if __name__ == "__main__":
         getPatches.process_images(raw_image_path, annotated_image_path, image_name)
         
     # Print the number of processed image pairs
-    print(f"Processed {len(raw_image_files)} image pairs.")
+    print(f"Processed {len(raw_image_files)} image pairs.\n")
