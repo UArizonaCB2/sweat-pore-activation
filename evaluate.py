@@ -1,4 +1,4 @@
-import os, argparse, torch
+import os, argparse, torch, cv2
 from torch.utils.data import Dataset, DataLoader, Subset, ConcatDataset 
 from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32
 from PIL import Image
@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split, StratifiedKFold
 from torchvision import transforms
 import torch.nn.functional as F
 from torchvision.utils import save_image
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 
@@ -152,7 +153,6 @@ class algorithm:
         # disable gradient calculation
         with torch.no_grad():
             for images, labels, names in test_loader:
-                
                 # Count the labels
                 for label in labels: 
                     if label == 0:
@@ -260,6 +260,88 @@ class algorithm:
     
     ConfusionMatrix(results, cnn_name)
     
+    def heatMap(initImgDir, patchSize, fp, fn, tn, tp):
+        """
+        Args: Original img
+              Confusion matrix: fp, fn, tp, tn (name of the images)
+        
+        This function will draw different colors on all the patches
+        according to the confusionMatrix on top of the original image 
+        so that human can identify the result from the experiment
+        """
+        
+        # extract the patch number from fp, fn, tp and tn
+        # stores only numbers in each list correspondingly 
+        fp_patchesNum, fn_patchesNum, tp_patchesNum, tn_patchesNum = [], [], [], []
+        matrix_numList = [fp_patchesNum, fn_patchesNum, tp_patchesNum, tn_patchesNum]
+        matrix = [fp, fn, tp, tn]
+        for i in range(4):
+            for patch in matrix[i]:
+                patchNum = int(patch.split('_')[1])
+                matrix_numList[i].append(patchNum)
+                
+        # print(f'fp patches: {len(matrix_numList[0])}')
+        # print(f'fn patches: {len(matrix_numList[1])}')
+        # print(f'tp patches: {len(matrix_numList[2])}')
+        # print(f'tn patches: {len(matrix_numList[3])}')
+        
+        initImg = cv2.imread(os.path.join(initImgDir, "6.bmp"))
+    
+        # print(f'(height, width, channels): {initImg.shape}')
+        # print(f'patch size: {patchSize}')
+        
+        height, width = initImg.shape[0], initImg.shape[1]
+        
+        num_of_x_patches = width // patchSize
+        num_of_y_patches = height // patchSize
+        
+        # Define colors for each category (in BGR format)
+        fp_color = (0, 0, 255)  # Red
+        fn_color = (255, 0, 0)  # Blue
+        tp_color = (0, 255, 0)  # Green
+        # tn_color will not be fill up any color
+
+        currentPatchNum = 1 #patch number start with 1
+        for x in range(0, num_of_x_patches):
+            for y in range(0, num_of_y_patches):
+                # Calculate the coordinates of the current patch
+                x1 = x * patchSize
+                y1 = y * patchSize
+                x2 = x1 + patchSize
+                y2 = y1 + patchSize
+                
+                # Check which category the current patch belongs to
+                if currentPatchNum in fp_patchesNum:
+                    color = fp_color
+                elif currentPatchNum in fn_patchesNum:
+                    color = fn_color
+                elif currentPatchNum in tp_patchesNum:
+                    color = tp_color
+                else:
+                    color = None
+                
+                # Draw a transparent overlay
+                overlay = initImg.copy()
+                cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
+                alpha = 0.3  # Transparency factor
+                cv2.addWeighted(overlay, alpha, initImg, 1 - alpha, 0, initImg)
+                
+                currentPatchNum+=1
+                
+                
+        # print(currentPatchNum)
+        
+        initImg_rgb = cv2.cvtColor(initImg, cv2.COLOR_BGR2RGB)
+        # Display the image
+        plt.imshow(initImg_rgb)
+        plt.title("Image")
+        plt.axis('off')  # Hide axes
+        plt.show()
+        
+        return 
+    
+    initImgDir = f'Preprocessing/input_images/testingModel/6bmp/raw'
+    heatMap(initImgDir, patchSize, fp, fn, tn, tp)
     
 
 if __name__ == "__main__":
