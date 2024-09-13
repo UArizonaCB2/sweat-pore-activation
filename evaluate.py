@@ -14,6 +14,10 @@ parser.add_argument('--CNNmodel',
                     required=True,
                     type = str)
 
+parser.add_argument('--prediction',
+                    required=True,
+                    type = str)
+
 parser.add_argument('--device',
                     default="mps",
                     type=str)
@@ -70,6 +74,7 @@ class algorithm:
     device = args.device
     patchSize = int(cnn_name.split("_p")[1].split("_")[0])
     batchSize = args.batchSize
+    predictedImg = args.prediction
     
     def recreate_model_architecture(cnn_name):
         # Recreate the model architecture for loading cnn models
@@ -86,31 +91,16 @@ class algorithm:
             raise ValueError(f"Unsupported CNN Model: {cnn_name}")
         return cnnModel
     
-    # Load the state dict
-    model_path = f'models/{cnn_name}'
-    state_dict = torch.load(model_path)
-
-    trainedModel = recreate_model_architecture(cnn_name)
-    
-    # Load the state dict into the model
-    trainedModel.load_state_dict(state_dict)
-    
-    # set the model to evaluation mode 
-    trainedModel.eval()
-
-    # # Load the testing dataset
-    # test_data = torch.load(f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
-    # print(f'Total testing data: {len(test_data)}')
-    # print()
-    
-    # Get the dataloaders: total_loader = train_loader(80%) + test_loader(20%)
     def create_Dataloaders(dataset_path, train_indices_path, test_indices_path, batch_size=batchSize):
+        """
+        Get the dataloaders: total_loader = train_loader(80%) + test_loader(20%)
+        """
         dataset = torch.load(dataset_path)
         train_indices = torch.load(train_indices_path)
         test_indices = torch.load(test_indices_path)
-        print(f'Total data: {len(dataset)}')
-        print(f'Total training data: {len(train_indices)}')
-        print(f'Total validating data: {len(test_indices)}')
+        # print(f'Total data: {len(dataset)}')
+        # print(f'Total training data: {len(train_indices)}')
+        # print(f'Total validating data: {len(test_indices)}')
         
         trainSubset = Subset(dataset, train_indices)
         validateSubset = Subset(dataset, test_indices)
@@ -119,15 +109,6 @@ class algorithm:
         train_loader = DataLoader(trainSubset, batch_size, shuffle=True)
         validate_loader = DataLoader(validateSubset, batch_size, shuffle=True)
         return total_loader, train_loader, validate_loader
-    total_loader, train_loader, test_loader = create_Dataloaders(
-    f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt',
-    f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt',
-    f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
-    # ----------- # 
-    
-    
-    # # Split the data -- Train Validate Test
-    # test_loader = DataLoader(test_data, batch_size = batchSize, shuffle = True, num_workers = 0)
 
     def evaluateModel(test_loader, device, model):
         model = model.to(device)
@@ -213,18 +194,17 @@ class algorithm:
         confusionMatric["FP: "] = FP
         confusionMatric["TN: "] = TN
         confusionMatric["FN: "] = FN
-        print(f'Numbers of label0: {label0Length}')
-        print(f'Numbers of label1: {label1Length}')
+        print(f'Patches with no Pores [label0]: {label0Length}')
+        print(f'Pathces have Pores [label1]: {label1Length}')
         print()
         return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
     
-    fp, fn, tn, tp, results= evaluateModel(total_loader, device, trainedModel)
-    
-    def ConfusionMatrix(results, modelName):
+    def ConfusionMatrix(results, modelName, predictedImg):
         TP, TN, FP, FN = results
 
         print("--- Confusion Matrix ---\n")
         print(f"Model: {modelName}\n")
+        print(f'Evaluation on: {predictedImg}\n')
         print(f"TP:{TP}, TN:{TN}, FP:{FP}, FN:{FN}\n")
         
         if TP + FP + FN + TN > 0:
@@ -258,9 +238,7 @@ class algorithm:
             print("F-score: N/A (precision and recall are both zero)\n")
         return 
     
-    ConfusionMatrix(results, cnn_name)
-    
-    def heatMap(initImgDir, patchSize, fp, fn, tn, tp):
+    def heatMap(initImgDir, predictedImg, patchSize, fp, fn, tn, tp):
         """
         Args: Original img
               Confusion matrix: fp, fn, tp, tn (name of the images)
@@ -285,7 +263,7 @@ class algorithm:
         # print(f'tp patches: {len(matrix_numList[2])}')
         # print(f'tn patches: {len(matrix_numList[3])}')
         
-        initImg = cv2.imread(os.path.join(initImgDir, "6.bmp"))
+        initImg = cv2.imread(os.path.join(initImgDir, f"{predictedImg[0]}.bmp"))
     
         # print(f'(height, width, channels): {initImg.shape}')
         # print(f'patch size: {patchSize}')
@@ -340,8 +318,29 @@ class algorithm:
         
         return 
     
-    initImgDir = f'Preprocessing/input_images/testingModel/6bmp/raw'
-    heatMap(initImgDir, patchSize, fp, fn, tn, tp)
+    # Load the state dict
+    model_path = f'models/{cnn_name}'
+    state_dict = torch.load(model_path)
+
+    trainedModel = recreate_model_architecture(cnn_name)
+    
+    # Load the state dict into the model
+    trainedModel.load_state_dict(state_dict)
+    
+    # set the model to evaluation mode 
+    trainedModel.eval()
+    
+    total_loader, train_loader, test_loader = create_Dataloaders(
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt',
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt',
+    f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
+    
+    fp, fn, tn, tp, results= evaluateModel(total_loader, device, trainedModel)
+    
+    ConfusionMatrix(results, cnn_name, predictedImg)
+    
+    initImgDir = f'Preprocessing/input_images/testingModel/{predictedImg}/raw'
+    heatMap(initImgDir,  predictedImg, patchSize, fp, fn, tn, tp)
     
 
 if __name__ == "__main__":
