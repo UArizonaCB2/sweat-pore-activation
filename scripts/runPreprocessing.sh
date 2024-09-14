@@ -2,7 +2,7 @@ chmod +x ./scripts/runPreprocessing.sh # Excute permission
 
 # Custom patch size 
 patch_size=32
-processedImg="6bmp"
+processedImg="2bmp"
 
 # Input directory
 # inputDirRaw='Preprocessing/input_images/smallBrushesNoBackground/raw'

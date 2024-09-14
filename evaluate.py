@@ -339,7 +339,7 @@ class algorithm:
     
     ConfusionMatrix(results, cnn_name, predictedImg)
     
-    initImgDir = f'Preprocessing/input_images/testingModel/{predictedImg}/raw'
+    initImgDir = f'Preprocessing/input_images/testingModel/{predictedImg}/annotated'
     heatMap(initImgDir,  predictedImg, patchSize, fp, fn, tn, tp)
     
 
