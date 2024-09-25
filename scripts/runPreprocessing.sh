@@ -5,14 +5,9 @@ patch_size=32
 processedImg="2bmp"
 
 # Input directory
-# inputDirRaw='Preprocessing/input_images/smallBrushesNoBackground/raw'
-# inputDirAnnotated='Preprocessing/input_images/smallBrushesNoBackground/annotated'
 inputDirRaw="Preprocessing/input_images/testingModel/$processedImg/raw"
 inputDirAnnotated="Preprocessing/input_images/testingModel/$processedImg/annotated"
 # Output Directory
-# coordinatesDir='Preprocessing/output_patches/centroid_coordinates'
-# centroidsDir='Preprocessing/output_patches/contour_images'
-# patchesDir='Preprocessing/output_patches/patch_size'
 coordinatesDir="Preprocessing/testingModel_output_patches/$processedImg/centroid_coordinates"
 centroidsDir="Preprocessing/testeingModel_output_patches/$processedImg/contour_images"
 patchesDir="Preprocessing/testingModel_output_patches/$processedImg/patch_size"

@@ -8,7 +8,7 @@ from torchvision import transforms
 import torch.optim as optim
 import torch.nn as nn
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32 # Need to be Fixed 
+from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32, CNN4LayersV2_p32, CNN4LayersV3_p32, CNN4LayersV4_p32
 
 
 
@@ -80,7 +80,10 @@ class algorithm:
         cnn_models = {
         "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32(),
         "SimpleCNN_p17": SimpleCNN_p17.SimpleCNN_p17(),
-        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32()}
+        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32(),
+        "CNN4LayersV2_p32": CNN4LayersV2_p32.CNN4LayersV2_p32(),
+        "CNN4LayersV3_p32": CNN4LayersV3_p32.CNN4LayersV3_p32(), 
+        "CNN4LayersV4_p32": CNN4LayersV4_p32.CNN4LayersV4_p32()}
         
         if cnn_name in cnn_models:
             cnnModel = cnn_models[cnn_name]

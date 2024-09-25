@@ -1,6 +1,6 @@
 import os, argparse, torch, cv2
 from torch.utils.data import Dataset, DataLoader, Subset, ConcatDataset 
-from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32
+from CNNs import SimpleCNN_p32, SimpleCNN_p17, CNN4Layers_p32, CNN4LayersV2_p32, CNN4LayersV3_p32, CNN4LayersV4_p32
 from PIL import Image
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from torchvision import transforms
@@ -83,7 +83,10 @@ class algorithm:
         cnn_models = {
         "SimpleCNN_p32": SimpleCNN_p32.SimpleCNN_p32(),
         "SimpleCNN_p17": SimpleCNN_p17.SimpleCNN_p17(), 
-        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32()}
+        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32(),
+        "CNN4LayersV2_p32": CNN4LayersV2_p32.CNN4LayersV2_p32(),
+        "CNN4LayersV3_p32": CNN4LayersV3_p32.CNN4LayersV3_p32(),
+        "CNN4LayersV4_p32": CNN4LayersV4_p32.CNN4LayersV4_p32()}
         
         if architecture in cnn_models:
             cnnModel = cnn_models[architecture]
