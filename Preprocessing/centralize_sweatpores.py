@@ -80,7 +80,7 @@ class centralize:
         for i, (patch, x, y) in enumerate(patchList):
             # Generate a unique filename for each patch
             # filen orignImgName_indx_Xcoord_Ycoord_hasPore.png
-            patchName = f"2.bmp_{i}_{x}_{y}_1.png"
+            patchName = f"2.bmp_{i}X{x}Y{y}_1.png"
             
             # Construct the full path for the output file
             output_path = os.path.join(dir, patchName)
