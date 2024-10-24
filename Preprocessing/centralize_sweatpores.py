@@ -3,13 +3,13 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 
-
 class centralize:
     """
     This class takes the coordinates of sweat pores and create a patch with a given size
     The centroid of the patch has to be the sweat pore coordinate
     Return: a list of patches
     """
+
     def __init__(self, coord_dir = './testingModel_output_patches/2bmp/centroid_coordinates/', image_dir = './input_images/testingModel/2bmp/raw/'):
         self.patchSize = 32 # Custom your own patch size
         self.batchSize = 8
