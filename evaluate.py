@@ -28,6 +28,10 @@ parser.add_argument('--patchSize',
                     default=32,
                     type=int)
 
+parser.add_argument('--patchesDir',
+                    required=True,
+                    type = str)
+
 parser.add_argument('--batchSize',
                     default=8,
                     type=int)
@@ -77,6 +81,8 @@ class algorithm:
     patchSize = int(cnn_name.split("_p")[1].split("_")[0])
     batchSize = args.batchSize
     predictedImg = args.prediction
+    patches_dir = args.patchesDir
+    print(patches_dir)
     
     def recreate_model_architecture(cnn_name):
         # Recreate the model architecture for loading cnn models
@@ -418,7 +424,7 @@ class algorithm:
     
     # ---------------------------------------- #    
     # Evaluate on centralized sweat pore dataset 
-    patches_dir = 'Preprocessing/centralizedPatches/32X32/'
+    # patches_dir = 'Preprocessing/centralizedPatches/32X32/'
     # Create dataloader for evaluation
     eval_loader = create_EvaluateLoaders(patches_dir)
     fp, fn, tn, tp, results= evaluateModel(eval_loader, device, trainedModel)

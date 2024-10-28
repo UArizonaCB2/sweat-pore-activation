@@ -10,7 +10,7 @@ class centralize:
     Return: a list of patches
     """
 
-    def __init__(self, coord_dir = './testingModel_output_patches/2bmp/centroid_coordinates/', image_dir = './input_images/testingModel/2bmp/raw/'):
+    def __init__(self, coord_dir = './testingModel_output_patches/6bmp/centroid_coordinates/', image_dir = './input_images/testingModel/6bmp/raw/'):
         self.patchSize = 32 # Custom your own patch size
         self.batchSize = 8
         self.CoordList = self.getCoordinates(coord_dir)
@@ -18,7 +18,7 @@ class centralize:
         self.storePatches(self.patchList)
         self.visulaizePatch(self.patchList, self.patchSize, patchNumber =45)
         
-    def getCoordinates(self, coordDir, filename='2.txt'):
+    def getCoordinates(self, coordDir, filename='6.txt'):
         """
         Get the Sweat pore coordinates from the given directory and return 
         a list of tuple stores coordinates
@@ -42,7 +42,7 @@ class centralize:
         print(f'Length of coordList: ',len(coordList))
         
         # Construct the full path to the image
-        image_path = os.path.join(imgDir, '2.bmp')
+        image_path = os.path.join(imgDir, '6.bmp')
         
         image = cv2.imread(image_path)
         
@@ -80,7 +80,7 @@ class centralize:
         for i, (patch, x, y) in enumerate(patchList):
             # Generate a unique filename for each patch
             # filen orignImgName_indx_Xcoord_Ycoord_hasPore.png
-            patchName = f"2.bmp_{i}X{x}Y{y}_1.png"
+            patchName = f"6.bmp_{i}X{x}Y{y}_1.png"
             
             # Construct the full path for the output file
             output_path = os.path.join(dir, patchName)
