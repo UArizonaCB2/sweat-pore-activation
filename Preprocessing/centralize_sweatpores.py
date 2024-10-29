@@ -2,6 +2,7 @@ import os
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import argparse
 
 class centralize:
     """
@@ -10,7 +11,8 @@ class centralize:
     Return: a list of patches
     """
 
-    def __init__(self, coord_dir = './testingModel_output_patches/6bmp/centroid_coordinates/', image_dir = './input_images/testingModel/6bmp/raw/'):
+    def __init__(self, coord_dir, image_dir, imgName):
+        self.imgName = imgName
         self.patchSize = 32 # Custom your own patch size
         self.batchSize = 8
         self.CoordList = self.getCoordinates(coord_dir)
@@ -18,13 +20,15 @@ class centralize:
         self.storePatches(self.patchList)
         self.visulaizePatch(self.patchList, self.patchSize, patchNumber =45)
         
-    def getCoordinates(self, coordDir, filename='6.txt'):
+    def getCoordinates(self, coordDir):
         """
         Get the Sweat pore coordinates from the given directory and return 
         a list of tuple stores coordinates
         """
         coordList = []
-        file_path = os.path.join(coordDir, filename)
+        file_path = os.path.join(coordDir, f'{imgName}.txt')
+        
+        print("!!!!!!!!!!!", file_path)
         
         with open(file_path, 'r') as f:
             for line in f:
@@ -42,7 +46,7 @@ class centralize:
         print(f'Length of coordList: ',len(coordList))
         
         # Construct the full path to the image
-        image_path = os.path.join(imgDir, '6.bmp')
+        image_path = os.path.join(imgDir, f"{imgName}.bmp")
         
         image = cv2.imread(image_path)
         
@@ -76,11 +80,11 @@ class centralize:
         This functions store the centralized patches in the local directory 
         for makeing the dataset 
         """
-        dir = './centralizedPatches/32X32/'
+        dir = 'Preprocessing/centralizedPatches/32X32/'
         for i, (patch, x, y) in enumerate(patchList):
             # Generate a unique filename for each patch
             # filen orignImgName_indx_Xcoord_Ycoord_hasPore.png
-            patchName = f"6.bmp_{i}X{x}Y{y}_1.png"
+            patchName = f"{imgName}.bmp_{i}X{x}Y{y}_1.png"
             
             # Construct the full path for the output file
             output_path = os.path.join(dir, patchName)
@@ -106,6 +110,15 @@ class centralize:
             print("No patches were created. Check your coordinates and image dimensions.")
 
 if __name__ == "__main__":
-    centralizer = centralize()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--imgName', required=True, type=str)
+    args = parser.parse_args()
+    
+    imgName = args.imgName
+    
+    coord_dir = f"Preprocessing/testingModel_output_patches/{imgName}bmp/centroid_coordinates/"
+    image_dir = f'Preprocessing/input_images/testingModel/{imgName}bmp/raw/'
+
+    centralizer = centralize(coord_dir=coord_dir, image_dir=image_dir, imgName=imgName)
     print(f'Number of pathces: {len(centralizer.patchList)}')
     print(f'Patch Type: {type(centralizer.patchList[0])}')
