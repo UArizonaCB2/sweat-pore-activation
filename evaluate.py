@@ -82,7 +82,6 @@ class algorithm:
     batchSize = args.batchSize
     predictedImg = args.prediction
     patches_dir = args.patchesDir
-    print(patches_dir)
     
     def recreate_model_architecture(cnn_name):
         # Recreate the model architecture for loading cnn models

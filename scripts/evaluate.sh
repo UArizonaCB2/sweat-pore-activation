@@ -2,8 +2,8 @@
 chmod +x ./scripts/evaluate.sh # Excute permission
 
 # Golbal variables
-centralized=true  # true: centralized pore pathces, false: sliding window pathces
-imgName="2" #ex. 2.bmp ---> 2
+centralized=false  # true: centralized pore pathces, false: sliding window pathces
+imgName="6" #ex. 2.bmp ---> 2
 
 if [ "$centralized" = true ]; then
     patchesDir="Preprocessing/centralizedPatches/32X32/"
