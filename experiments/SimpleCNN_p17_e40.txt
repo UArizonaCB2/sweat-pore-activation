@@ -1,7 +1,0 @@
---- Confusion Matrix ---
-Model: SimpleCNN_p17_e40
-TP:72, TN:3300, FP:77, FN:151
-Accuracy: 0.9367
-Precision: 0.4832
-Recall: 0.3229
-F-score: 0.3871
