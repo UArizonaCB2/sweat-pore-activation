@@ -116,25 +116,6 @@ class algorithm:
         eval_loader = DataLoader(dataset, batch_size, shuffle=False)
 
         return eval_loader
-    
-    def create_Dataloaders(dataset_path, train_indices_path, test_indices_path, batch_size=batchSize):
-        """
-        Get the dataloaders: total_loader = train_loader(80%) + test_loader(20%)
-        """
-        dataset = torch.load(dataset_path)
-        train_indices = torch.load(train_indices_path)
-        test_indices = torch.load(test_indices_path)
-        # print(f'Total data: {len(dataset)}')
-        # print(f'Total training data: {len(train_indices)}')
-        # print(f'Total validating data: {len(test_indices)}')
-        
-        trainSubset = Subset(dataset, train_indices)
-        validateSubset = Subset(dataset, test_indices)
-        
-        total_loader = DataLoader(dataset, batch_size, shuffle=True)
-        train_loader = DataLoader(trainSubset, batch_size, shuffle=True)
-        validate_loader = DataLoader(validateSubset, batch_size, shuffle=True)
-        return total_loader, train_loader, validate_loader
 
     def evaluateModel(test_loader, device, model):
         model = model.to(device)
@@ -157,64 +138,86 @@ class algorithm:
         label0Length = 0
         label1Length = 0
         
-        # disable gradient calculation
-        with torch.no_grad():
-            for images, labels, names in test_loader:
-                # Count the labels
-                for label in labels: 
-                    if label == 0:
-                        label0Length+=1
-                    else:
-                        label1Length+=1
-                
-                images, labels = images.to(device), labels.to(device)
-                
-                prediction = model(images)
-
-                # Apply softmax to convert the raw logits into probabilities
-                probabilities = F.softmax(prediction, dim=1)
-
-                # Finds the highest probabilities for each image
-                _, predicted_classes = torch.max(probabilities, 1)
-
-                for i in range(len(labels)):
-                    if predicted_classes[i].item() == labels[i].item() == 1:
-                        # Create the full path for the image file
-                        save_dir = f'results/TP/'
-                        filename = names[i]
-                        full_path = os.path.join(save_dir, filename)
-                        # Save the image
-                        save_image(images[0], full_path)
+        # Opening and writing to a text file
+        log_path = os.path.join('results/', 'evaluation_results.txt')
+        with open(log_path, 'w') as log_file:
+            # 'w' mode: Opens for writing, creating a new file or overwriting existing file
+            # Write header
+            log_file.write("=== Model Evaluation Results ===\n\n")
+            
+            # disable gradient calculation
+            with torch.no_grad():
+                for images, labels, names in test_loader:
+                    # Count the labels
+                    for label in labels: 
+                        if label == 0:
+                            label0Length+=1
+                        else:
+                            label1Length+=1
                     
-                        tp_names.append(names[i])
-                        TP += 1
-                    elif predicted_classes[i].item() == labels[i].item() == 0:
-                        # Create the full path for the image file
-                        save_dir = f'results/TN/'
-                        filename = names[i]
-                        full_path = os.path.join(save_dir, filename)
-                        # Save the image
-                        save_image(images[0], full_path)
-                        tn_names.append(names[i])
-                        TN += 1
-                    elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
-                        # Create the full path for the image file
-                        save_dir = f'results/FP/'
-                        filename = names[i]
-                        full_path = os.path.join(save_dir, filename)
-                        # Save the image
-                        save_image(images[0], full_path)
-                        fp_names.append(names[i]) # Keep track of the fp
-                        FP += 1
-                    else:
-                        # Create the full path for the image file
-                        save_dir = f'results/FN/'
-                        filename = names[i]
-                        full_path = os.path.join(save_dir, filename)
-                        # Save the image
-                        save_image(images[0], full_path)
-                        fn_names.append(names[i]) # Keep track of the fn
-                        FN += 1
+                    images, labels = images.to(device), labels.to(device)
+                    
+                    prediction = model(images)
+
+                    # Apply softmax to convert the raw logits into probabilities
+                    probabilities = F.softmax(prediction, dim=1)
+
+                    # Finds the highest probabilities for each image
+                    probs, predicted_classes = torch.max(probabilities, 1)
+
+                    for i in range(len(labels)):
+                        # Get probability for the predicted class
+                        prob = probs[i].item()
+                        name = names[i]
+                        predicted_label = predicted_classes[i].item()
+                        actual_label = labels[i].item()
+                        
+                        
+                        # Format the prediction result
+                        result_str = (f"Image: {name} | "
+                                    f"Predicted: {predicted_label} | "
+                                    f"Actual: {actual_label} | "
+                                    f"Prediction Confidence: {prob:.2%}\n")
+                                    # formats a number as a percentage with 2 decimal places
+                        # Write to log file
+                        log_file.write(result_str)
+                        
+                        if predicted_classes[i].item() == labels[i].item() == 1:
+                            # # Create the full path for the image file
+                            # save_dir = f'results/TP/'
+                            # filename = names[i]
+                            # full_path = os.path.join(save_dir, filename)
+                            # # Save the image
+                            # save_image(images[0], full_path)
+                            tp_names.append(names[i])
+                            TP += 1
+                        elif predicted_classes[i].item() == labels[i].item() == 0:
+                            # # Create the full path for the image file
+                            # save_dir = f'results/TN/'
+                            # filename = names[i]
+                            # full_path = os.path.join(save_dir, filename)
+                            # # Save the image
+                            # save_image(images[0], full_path)
+                            tn_names.append(names[i])
+                            TN += 1
+                        elif predicted_classes[i].item() != labels[i].item() and predicted_classes[i].item() == 1:
+                            # # Create the full path for the image file
+                            # save_dir = f'results/FP/'
+                            # filename = names[i]
+                            # full_path = os.path.join(save_dir, filename)
+                            # # Save the image
+                            # save_image(images[0], full_path)
+                            fp_names.append(names[i]) # Keep track of the fp
+                            FP += 1
+                        else:
+                            # # Create the full path for the image file
+                            # save_dir = f'results/FN/'
+                            # filename = names[i]
+                            # full_path = os.path.join(save_dir, filename)
+                            # # Save the image
+                            # save_image(images[0], full_path)
+                            fn_names.append(names[i]) # Keep track of the fn
+                            FN += 1
                         
         confusionMatric["TP: "] = TP
         confusionMatric["FP: "] = FP
@@ -413,13 +416,6 @@ class algorithm:
     
     # set the model to evaluation mode 
     trainedModel.eval()
-    
-    # total_loader, train_loader, test_loader = create_Dataloaders(
-    # f'Preprocessing/dataset/{patchSize}X{patchSize}/dataset.pt',
-    # f'Preprocessing/dataset/{patchSize}X{patchSize}/train_indices.pt',
-    # f'Preprocessing/dataset/{patchSize}X{patchSize}/test_indices.pt')
-    # fp, fn, tn, tp, results= evaluateModel(total_loader, device, trainedModel)
-    
     
     # ---------------------------------------- #    
     # Evaluate on centralized sweat pore dataset 

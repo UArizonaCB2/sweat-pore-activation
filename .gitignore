@@ -2,7 +2,6 @@
 env/
 local_images
 .DS_Stor
-results/*
 Preprocessing/output_patches/patch_size/*
 Preprocessing/input_images/testingModel/*
 Preprocessing/testingModel_output_patches/*
