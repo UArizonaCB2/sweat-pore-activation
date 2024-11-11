@@ -417,13 +417,9 @@ class algorithm:
     # set the model to evaluation mode 
     trainedModel.eval()
     
-    # ---------------------------------------- #    
-    # Evaluate on centralized sweat pore dataset 
-    # patches_dir = 'Preprocessing/centralizedPatches/32X32/'
     # Create dataloader for evaluation
     eval_loader = create_EvaluateLoaders(patches_dir)
     fp, fn, tn, tp, results= evaluateModel(eval_loader, device, trainedModel)
-    # ---------------------------------------- #
     
     ConfusionMatrix(results, cnn_name, predictedImg)
     initImgDir = f'Preprocessing/input_images/testingModel/{predictedImg}/raw'
