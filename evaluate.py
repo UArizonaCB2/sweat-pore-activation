@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 from Preprocessing.centralize_sweatpores import centralize
+from scipy.stats import gaussian_kde
 
 parser = argparse.ArgumentParser()
 
@@ -129,6 +130,13 @@ class algorithm:
             "TN: ":0,
             "FP: ":0,
             "FN: ":0}
+        
+        # This hashtable will return a dictionary 
+        # with the key of string and a list of tuples (name, probability) as value
+        specificity = {
+            "TP": [],
+            "FP": []
+        }
 
         TP = 0
         TN = 0
@@ -177,7 +185,7 @@ class algorithm:
                         result_str = (f"Image: {name} | "
                                     f"Predicted: {predicted_label} | "
                                     f"Actual: {actual_label} | "
-                                    f"Prediction Confidence: {prob:.2%}\n")
+                                    f"Probability: {prob:.2%}\n")
                                     # formats a number as a percentage with 2 decimal places
                         # Write to log file
                         log_file.write(result_str)
@@ -190,6 +198,7 @@ class algorithm:
                             # # Save the image
                             # save_image(images[0], full_path)
                             tp_names.append(names[i])
+                            specificity["TP"].append((name, predicted_label, actual_label, prob))
                             TP += 1
                         elif predicted_classes[i].item() == labels[i].item() == 0:
                             # # Create the full path for the image file
@@ -208,6 +217,7 @@ class algorithm:
                             # # Save the image
                             # save_image(images[0], full_path)
                             fp_names.append(names[i]) # Keep track of the fp
+                            specificity["FP"].append((name, predicted_label, actual_label, prob))
                             FP += 1
                         else:
                             # # Create the full path for the image file
@@ -226,7 +236,7 @@ class algorithm:
         print(f'Patches with no Pores [label0]: {label0Length}')
         print(f'Patches have Pores [label1]: {label1Length}')
         print()
-        return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN]
+        return fp_names, fn_names, tn_names, tp_names, [TP, TN, FP, FN], specificity
     
     def ConfusionMatrix(results, modelName, predictedImg):
         TP, TN, FP, FN = results
@@ -405,6 +415,37 @@ class algorithm:
         
         return 
     
+    def specificity_distribution(specificity):
+        """
+        Creates a distribution with probability on x-axis and PDF of TP and FP on y-axis
+        """
+        # print(f"Specificity: {specificity}")
+
+        tp_probs = [item[3] for item in specificity["TP"]]
+        fp_probs = [item[3] for item in specificity["FP"]]
+        
+        # print(f"Number of TP: {len(tp_probs)}, Number of FP: {len(fp_probs)}")
+
+        # Create the plot
+        plt.figure(figsize=(10, 6))
+
+        # Plot histograms
+        # alpha controls the transparancy
+        plt.hist(tp_probs, bins=20, alpha=0.7, label='True Positives', color='blue', density=True)
+        plt.hist(fp_probs, bins=20, alpha=0.7, label='False Positives', color='red', density=True)
+
+        # Customize the plot
+        plt.xlabel('Probability')
+        plt.ylabel('Normalized Density')
+        plt.title('Normalized Histogram of True Positives and False Positives')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+
+        # Show the plot
+        plt.show()
+        
+        return 
+    
     # Load the state dict
     model_path = f'models/{cnn_name}'
     state_dict = torch.load(model_path)
@@ -419,11 +460,13 @@ class algorithm:
     
     # Create dataloader for evaluation
     eval_loader = create_EvaluateLoaders(patches_dir)
-    fp, fn, tn, tp, results= evaluateModel(eval_loader, device, trainedModel)
+    fp, fn, tn, tp, results, specificity = evaluateModel(eval_loader, device, trainedModel)
+    
+    specificity_distribution(specificity)
     
     ConfusionMatrix(results, cnn_name, predictedImg)
     initImgDir = f'Preprocessing/input_images/testingModel/{predictedImg}/raw'
-    heatMap(initImgDir,  predictedImg, patchSize, fp, fn, tn, tp)
+    # heatMap(initImgDir,  predictedImg, patchSize, fp, fn, tn, tp)
     
 
 if __name__ == "__main__":
