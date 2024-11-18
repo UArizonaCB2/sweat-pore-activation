@@ -172,6 +172,13 @@ class algorithm:
 
                     # Finds the highest probabilities for each image
                     probs, predicted_classes = torch.max(probabilities, 1)
+                    
+                    # Apply threshold , 0.8 would be a good threshold for our dataset
+                    # torch.where(condition, input (if true), other (if false))
+                    probability_threshold = 0.5 
+                    predicted_classes = torch.where(probs >= probability_threshold, 
+                              predicted_classes, 
+                              torch.zeros_like(predicted_classes))
 
                     for i in range(len(labels)):
                         # Get probability for the predicted class
@@ -462,7 +469,7 @@ class algorithm:
     eval_loader = create_EvaluateLoaders(patches_dir)
     fp, fn, tn, tp, results, specificity = evaluateModel(eval_loader, device, trainedModel)
     
-    specificity_distribution(specificity)
+    # specificity_distribution(specificity)
     
     ConfusionMatrix(results, cnn_name, predictedImg)
     initImgDir = f'Preprocessing/input_images/testingModel/{predictedImg}/raw'
