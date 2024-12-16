@@ -7,7 +7,7 @@ def extract_frames(input_video, output_dir):
         'ffmpeg',
         '-i', input_video,
         '-vf', 'fps=fps=1',  # Extract 1 frame per second, adjust as needed
-        os.path.join(output_dir, 'frame%04d.png')
+        os.path.join(output_dir, 'frame%04d.bmp')
     ]
 
     # Execute the FFmpeg command
@@ -15,8 +15,8 @@ def extract_frames(input_video, output_dir):
     return
 
 # Define paths based on the given directory structure
-input_video = './videos/Rayhand-IRvid.mp4'
-output_frames = './frames/'
+input_video = './videos/inputVideos/hand.mp4'
+output_frames = './frames/videoToframes'
 
 # Extract frames
 extract_frames(input_video, output_frames)
