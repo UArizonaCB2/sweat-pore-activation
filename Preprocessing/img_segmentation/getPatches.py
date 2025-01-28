@@ -275,17 +275,28 @@ if __name__ == "__main__":
     # Get a list of image files in the raw image folder
     raw_image_files = os.listdir(raw_image_folder)
     
+    DSstoreFileCounter = 0
     for image_name in raw_image_files:
         """
         We assume that the images in the annotated_image_files have the 
         same images name as  the images in their correspoding raw_image_files
         """
+        # Skip .DS_Store files
+        if image_name.startswith('.'):
+            DSstoreFileCounter += 1
+            continue
         # construct the full path of the raw image and circled image paths
         raw_image_path = os.path.join(raw_image_folder, image_name)
         annotated_image_path = os.path.join(annotated_image_folder, image_name)
+        # # Debug prints
+        # print(f"Processing image: {image_name}")
+        # print(f"Raw image path: {raw_image_path}")
+        # print(f"Raw image exists: {os.path.exists(raw_image_path)}")
+        # print(f"Annotated image path: {annotated_image_path}")
+        # print(f"Annotated image exists: {os.path.exists(annotated_image_path)}")
         
         # Run the Preprocessing pipeline
         getPatches.process_images(raw_image_path, annotated_image_path, image_name)
         
     # Print the number of processed image pairs
-    print(f"Processed {len(raw_image_files)} image pairs.\n")
+    print(f"Processed {len(raw_image_files) - DSstoreFileCounter} image pairs.\n")
