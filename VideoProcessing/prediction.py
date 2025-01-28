@@ -6,7 +6,7 @@ from PIL import Image
 # Add parent directory to Python path
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(parent_dir)
-from CNNs import CNN4Layers_p32
+from CNNs import CNN4Layers_p32, CNN4LayersV4_p32
 
 parser = argparse.ArgumentParser()
 
@@ -81,7 +81,8 @@ class algorithm:
         architecture = cnn_name.split("_e")[0]
         
         cnn_models = {
-        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32()}
+        "CNN4Layers_p32": CNN4Layers_p32.CNN4Layers_p32(),
+        "CNN4LayersV4_p32": CNN4LayersV4_p32.CNN4LayersV4_p32()}
         
         if architecture in cnn_models:
             cnnModel = cnn_models[architecture]
