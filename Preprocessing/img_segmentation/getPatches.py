@@ -268,6 +268,7 @@ if __name__ == "__main__":
     patchSize = args.patchSize
     raw_image_folder = args.rawDir
     annotated_image_folder = args.annotatedDir
+    centroidsDir = args.centroidsDir
     
     # create an instance of the getPatches class
     getPatches = GetPatches(patch_size = patchSize)   
