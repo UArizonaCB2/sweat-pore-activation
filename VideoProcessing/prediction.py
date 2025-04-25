@@ -228,8 +228,9 @@ class algorithm:
     # if os.path.exists(patches_dir):
     #     print("Patches Dir exist")
     
-    state_dict = torch.load(model_path)
-
+    # state_dict = torch.load(model_path)
+    state_dict = torch.load(model_path, weights_only=True)
+    
     trainedModel = recreate_model_architecture(cnn_name)
     
     # Load the state dict into the model
