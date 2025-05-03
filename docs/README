@@ -1,6 +1,10 @@
 # DeepPore: Automated Detection and Analysis of Congnitive Sweat Pore Activation using Neural Networks on Thermal Imaging Video
 
-## Introduction
+## Projecet Motivation:
+This project demonstrates the feasibility of monitoring sweat pore activation (SPA) through thermal imaging video and deep neural networks as a measure of human performance during breathing and physical tasks. Our investigation addresses three key questions: 
+1. Can deep learning models accurately detect sweat pore activation in thermal imaging while minimizing false positive? 
+2. Does sweat pore activation correlate with breathing and physical movement?
+3. 
 
 ## Features 
 
