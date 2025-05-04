@@ -7,9 +7,12 @@ This project demonstrates the feasibility of monitoring sweat pore activation (S
 3. 
 
 ## Features 
-
+- Automated detection of sweat pores in thermal imaging videos
+- Real-time visulization of pore activation patterns
+- Temporal distribution analysis of activated pore counts
+- - Three CNN architectures with increasing complexity (LightNet, QuadCNN, DeepPoreNet)
 ## Dataset 
-
+![Alt text](../docs/readme_imgs/dataset_partitioning.png "Dataset Partitioning")
 ## Model Archetectures
 
 ## 
