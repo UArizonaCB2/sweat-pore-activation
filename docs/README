@@ -3,14 +3,18 @@
 ## Projecet Motivation:
 This project demonstrates the feasibility of monitoring sweat pore activation (SPA) through thermal imaging video and deep neural networks as a measure of human performance during breathing and physical tasks. Our investigation addresses three key questions: 
 1. Can deep learning models accurately detect sweat pore activation in thermal imaging while minimizing false positive? 
-2. Does sweat pore activation correlate with breathing and physical movement?
-3. 
+2. Does sweat pore activation correlate with breathing and physical movement? Our assumption is that sweat pore activity would increase with both types of effort and that this change will ouccr rapidly. 
+
 
 ## Features 
 - Automated detection of sweat pores in thermal imaging videos
 - Real-time visulization of pore activation patterns
 - Temporal distribution analysis of activated pore counts
 - Three CNN architectures with increasing complexity (LightNet, QuadCNN, DeepPoreNet)
+
+## Design 
+Talk about the overview of how we design the pipeline
+
 ## Dataset 
 ![Alt text](./docs/readme_imgs/dataset_partitioning.png)
 
