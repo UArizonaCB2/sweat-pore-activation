@@ -13,11 +13,12 @@ This project demonstrates the feasibility of monitoring sweat pore activation (S
 - Three CNN architectures with increasing complexity (LightNet, QuadCNN, DeepPoreNet)
 
 ## Design 
+In this project, we designed and implemented DeepPore, a system capable of detecting and highligting sweat pore clusters from infrared (IR) camera video footage. We gathered videos from the University of Arizona Health Department and used FFmpeg, a widely used Python library for video processing, to extract frames. 
 ![Alt text](./docs/readme_imgs/dataset_generation.png)
-Talk about the overview of how we design the pipeline
+We collected videos and split them into frame sequences at one frame per second to generate our raw image data. 
 
 ## Dataset 
-![Alt text](./docs/readme_imgs/dataset_partitioning.png)
+![Alt text](./docs/readme_imgs/dataset.png)
 
 
 ## Model Archetectures
