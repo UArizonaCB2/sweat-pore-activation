@@ -29,5 +29,13 @@ DeepPoreNet, our best-performing model, implements a four-layer CNN with:
 - Five fully connected layers (128→64→32→16→8→2)
 ![Alt text](./docs/readme_imgs/deepPoreNet.png)
 
-## Video Result
+DeepPoreNet achieved:
+- True Positive Rate (TPR): 72.3%
+- True Negative Rate (TNR): 89.1%
+- False Positive Rate (FPR): 10.9%
+- False Negative Rate (FNR): 27.7%
+- Accuracy: 86.7%
+
+## Results
+![Alt text](./docs/readme_imgs/temperal_distribution.png)
 [![Video Title](https://img.youtube.com/vi/jkqaD_VT8t8/maxresdefault.jpg)](https://www.youtube.com/watch?v=jkqaD_VT8t8)
