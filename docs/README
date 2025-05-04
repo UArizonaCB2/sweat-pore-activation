@@ -13,6 +13,7 @@ This project demonstrates the feasibility of monitoring sweat pore activation (S
 - Three CNN architectures with increasing complexity (LightNet, QuadCNN, DeepPoreNet)
 
 ## Design 
+![Alt text](./docs/readme_imgs/dataset_generation.png)
 Talk about the overview of how we design the pipeline
 
 ## Dataset 
@@ -20,6 +21,13 @@ Talk about the overview of how we design the pipeline
 
 
 ## Model Archetectures
+DeepPoreNet, our best-performing model, implements a four-layer CNN with:
+- Growing channel depths (1→16→32→64→128)
+- 2×2 kernels with batch normalization
+- ReLU activation
+- Max-pooling after each convolutional block
+- Five fully connected layers (128→64→32→16→8→2)
+![Alt text](./docs/readme_imgs/deepPoreNet.png)
 
 ## Video Result
 [![Video Title](https://img.youtube.com/vi/jkqaD_VT8t8/maxresdefault.jpg)](https://www.youtube.com/watch?v=jkqaD_VT8t8)
