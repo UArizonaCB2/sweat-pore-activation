@@ -12,7 +12,7 @@ This project demonstrates the feasibility of monitoring sweat pore activation (S
 - Temporal distribution analysis of activated pore counts
 - Three CNN architectures with increasing complexity (LightNet, QuadCNN, DeepPoreNet)
 ## Dataset 
-![Alt text](./readme_imgs/dataset_partitioning.png)
+![Alt text](./docs/readme_imgs/dataset_partitioning.png)
 ## Model Archetectures
 
 ## 
