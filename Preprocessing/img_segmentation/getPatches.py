@@ -256,9 +256,9 @@ class GetPatches:
         print(f"Image name: {image_name}")
         print("Image Shape:", "(",img_width, img_height,")")
         print("Total Sweat Pore Coordinates: ",len(self.centroid_lst), "| Sweat Pores Count: ",pores_count)
-        print("Total Bathces: ", (img_height // batch_height)*(img_width // batch_width),
-              "| Batches Count: ",num_batch_count)
-        print("Batches have sweat pores: ", hasPores_batches)
+        print("Total Pathces: ", (img_height // batch_height)*(img_width // batch_width),
+              "| Patches Count: ",num_batch_count)
+        print("Patches have sweat pores: ", hasPores_batches)
         print()
         
         return

@@ -2,7 +2,7 @@ chmod +x ./scripts/preprocessing.sh # Excute permission
 
 # Custom patch size 
 patch_size=32
-processedImg="2bmp"
+processedImg="2345bmps"
 
 # Input directory
 inputDirRaw="Preprocessing/input_images/testingModel/$processedImg/raw"
