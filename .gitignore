@@ -11,3 +11,4 @@ VideoProcessing/frames/*
 VideoProcessing/videos/inputVideos/*
 VideoProcessing/dataset/slidingWindow/32X32/*
 VideoProcessing/results
+VideoProcessing/EDA_data/*
