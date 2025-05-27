@@ -2,9 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re, os 
 
-def get_EDA_data():
+def get_EDA_data(file):
     # Read the excel file 
-    df = pd.read_excel('VideoProcessing/EDA_data/EDA_R.xlsx')
+    df = pd.read_excel(f'VideoProcessing/EDA_data/{file}')
     
     # Create scatter plot - EDA
     # plt.figure(figsize=(10, 6))
@@ -41,12 +41,12 @@ def get_prediction_data():
         
     return data
 
-def compare_pore_eda_timeseries(prediction_data):
+def compare_pore_eda_timeseries(prediction_data, eda_file):
     # Extract pore data
     pore_frames, pore_counts = zip(*prediction_data)
     
     # Get EDA data
-    eda_time, eda_values = get_EDA_data()
+    eda_time, eda_values = get_EDA_data(eda_file)
     
     # Create two separate plots (no shared x-axis)
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(14, 10))
@@ -77,10 +77,10 @@ def compare_pore_eda_timeseries(prediction_data):
  
 
 if __name__ == "__main__":
-    print("Time Series")
     # Check current working directory
     # print("Current directory:", os.getcwd())
     # get_EDA_data()
+    eda_file = 'EDA_R.xlsx'
     prediction_data = get_prediction_data()
-    compare_pore_eda_timeseries(prediction_data)
+    compare_pore_eda_timeseries(prediction_data, eda_file)
     
